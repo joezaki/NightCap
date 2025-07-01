@@ -1,7 +1,7 @@
 
 difference() {
 // Import your STL model
-import("MouseBox3_v2.stl");
+import("MouseBoxEIB16.stl");
 
 // Hole from [1.58, 4.2, 3.75] to [2, 2, 0]
 translate([2.0962, 1.4963, -0.8585])

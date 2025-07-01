@@ -16,7 +16,7 @@ translate([-15.3, -14.00, 1]) {{
 
 // Load your STL
 translate([0, 0, 1]) {{
-    import("MouseBox_v3.stl");
+    import("MouseBoxEIB16.stl");
 }}
 
 // Electrode holes

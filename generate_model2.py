@@ -3,13 +3,31 @@ import math
 
 openscad_path = "C:/Program Files/OpenSCAD/openscad.exe"  # Use forward slashes
 
+# Define all electrode entrances
+A1 = [-4.2,0.36,3.75]
+A2 = [-4.2,1.49,3.75]
+A3 = [-4.2, 2.62,3.75]
+A4 = [-4.2, 3.75,3.75]
+A5 = [-2.05,4.15,3.75]
+A6 = [-0.92,4.15,3.75]
+A7 = [0.21,4.15,3.75]
+A8 = [1.34,4.15,3.75]
+A9 = [4.2,-0.36, 3.75]
+A10 = [4.2,-1.49,3.75]
+A11 = [4.2,-2.62,3.75]
+A12 = [4.2,-3.75,3.75]
+B1 = [2.05,-4.15,3.75]
+B2 = [0.92,-4.15,3.75]
+B3 = [-0.21,-4.15,3.75]
+B4 = [-1.34,-4.15,3.75]
+
 # List of holes: (entry_point_xyz, exit_point_xyz)
 holes = [
     ([1.58, 4.2, 3.75], [2, 2, 0]), ([4.2, -0.9, 3.75], [2, -2, 0]), ([2, -4.2, 3.75], [1.5, -3.2, 0]),
 ]
 
 hole_radius = 0.4
-stl_file = "MouseBox3_v2.stl"
+stl_file = "MouseBoxEIB16.stl"
 
 def vec_sub(a, b):
     return [a[i] - b[i] for i in range(3)]
