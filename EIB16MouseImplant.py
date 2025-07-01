@@ -54,8 +54,8 @@ holes = [
     (A5, Region6_updated), (B2, Region7_updated), (B3, Region8_updated), 
 ]
 
-hole_radius = 0.21
-stl_file = "MouseBoxEIB16.stl"
+hole_radius = 0.23
+stl_file = "BlankMouseImplant.stl"
 
 def vec_sub(a, b):
     return [a[i] - b[i] for i in range(3)]
@@ -106,7 +106,7 @@ for entry, exit in holes:
     vec = vec_sub(exit, entry)
     length = vec_len(vec)
     unit_vec = normalize(vec)
-    extra = 0.3
+    extra = 0.2
     base_point = [exit[i] + unit_vec[i] * extra for i in range(3)]
 
     angle = angle_between(vec)
@@ -118,7 +118,7 @@ translate([{base_point[0]:.4f}, {base_point[1]:.4f}, {base_point[2]:.4f}])
 rotate(a = {angle:.4f}, v = [{axis[0]:.4f}, {axis[1]:.4f}, {axis[2]:.4f}])
     cylinder(h = {length + 1.2:.4f}, r = {hole_radius}, $fn=60);
 translate([{exit[0]:.4f}, {exit[1]:.4f}, 0])
-        cylinder(h = 1, r = {hole_radius}+0.07, $fn=60);
+        cylinder(h = 1, r = {hole_radius}+0.05, $fn=60);
 """
 
 final_scad = f"""
