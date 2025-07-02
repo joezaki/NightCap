@@ -127,12 +127,12 @@ difference() {{
 }}
 """
 
-with open("model2.scad", "w") as f:
+with open("EIB16MouseImplant.scad", "w") as f:
     f.write(final_scad)
 
 result = subprocess.run([
     openscad_path,
-    "-o", "model2.stl",
+    "-o", "EIB16MouseImplant.stl",
     "model2.scad"
 ], capture_output=True, text=True)
 
@@ -140,4 +140,4 @@ if result.returncode != 0:
     print("❌ Error running OpenSCAD:")
     print(result.stderr)
 else:
-    print("✅ model2.stl generated successfully!")
+    print("✅ EIB16MouseImplant.stl generated successfully!")
