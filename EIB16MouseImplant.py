@@ -72,7 +72,7 @@ ground_holes = [
     (A9Ground, GroundRegion1_updated)]
 
 hole_radius = 0.23
-ground_radius = 0.4
+ground_radius = 0.35
 desired_exit_z = 0.5  # Desired Z coordinate for the exit point
 stl_file = "BlankMouseImplant.stl"
 stl2_file = "BlankDepthGuide.stl"
@@ -143,7 +143,8 @@ translate([{exit[0]:.4f}, {exit[1]:.4f}, 0])
 """
     
 for entry_g, exit_g in ground_holes:
-    vec_g = vec_sub(exit_g, entry_g)
+    adjusted_exit_g = [exit_g[0], exit_g[1], desired_exit_z]
+    vec_g = vec_sub(adjusted_exit_g, entry_g)
     length_g = vec_len(vec_g)
     unit_vec_g = normalize(vec_g)
     extra_g = 0.2
