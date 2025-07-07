@@ -1,61 +1,61 @@
 
 difference() {
 // Import your STL model
-import("BlankMouseImplant.stl");
+import("BlankMouseImplantv2.stl");
 
 // Hole from [4.2, -0.36, 3.75] to [1.3, 0.0, -1.5]
-translate([1.1673, 0.0165, 0.3513])
+translate([1.3000, 0.0000, 0.5000])
 rotate(a = 41.9605, v = [0.1232, 0.9924, -0.0000])
-    cylinder(h = 5.5706, r = 0.23, $fn=60);
+    cylinder(h = 5.5706, r = 0.28, $fn=60);
 translate([1.3000, 0.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Hole from [-4.2, 0.36, 3.75] to [-1.3, 0.0, -1.5]
-translate([-1.1673, -0.0165, 0.3513])
+translate([-1.3000, 0.0000, 0.5000])
 rotate(a = 41.9605, v = [-0.1232, -0.9924, 0.0000])
-    cylinder(h = 5.5706, r = 0.23, $fn=60);
+    cylinder(h = 5.5706, r = 0.28, $fn=60);
 translate([-1.3000, 0.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Hole from [0.21, 4.15, 3.75] to [0.3, 4.2, -2.5]
-translate([0.3055, 4.2031, 0.3001])
+translate([0.3000, 4.2000, 0.5000])
 rotate(a = 1.8145, v = [0.4856, -0.8742, -0.0000])
-    cylinder(h = 4.4516, r = 0.23, $fn=60);
+    cylinder(h = 4.4516, r = 0.28, $fn=60);
 translate([0.3000, 4.2000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Hole from [-0.92, 4.15, 3.75] to [-0.3, 4.2, -2.5]
-translate([-0.2625, 4.2030, 0.3036])
+translate([-0.3000, 4.2000, 0.5000])
 rotate(a = 10.8347, v = [0.0804, -0.9968, -0.0000])
-    cylinder(h = 4.5090, r = 0.23, $fn=60);
+    cylinder(h = 4.5090, r = 0.28, $fn=60);
 translate([-0.3000, 4.2000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Hole from [1.34, 4.15, 3.75] to [2, 2.5, -3.5]
-translate([2.0356, 2.4109, 0.3245])
+translate([2.0000, 2.5000, 0.5000])
 rotate(a = 28.6699, v = [-0.9285, -0.3714, 0.0000])
-    cylinder(h = 4.9041, r = 0.23, $fn=60);
+    cylinder(h = 4.9041, r = 0.28, $fn=60);
 translate([2.0000, 2.5000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Hole from [-2.05, 4.15, 3.75] to [-2, 2.5, -3.5]
-translate([-1.9973, 2.4095, 0.3217])
+translate([-2.0000, 2.5000, 0.5000])
 rotate(a = 26.9272, v = [-0.9995, -0.0303, 0.0000])
-    cylinder(h = 4.8452, r = 0.23, $fn=60);
+    cylinder(h = 4.8452, r = 0.28, $fn=60);
 translate([-2.0000, 2.5000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Hole from [0.92, -4.15, 3.75] to [1, -3.5, -2]
-translate([1.0048, -3.4608, 0.3039])
+translate([1.0000, -3.5000, 0.5000])
 rotate(a = 11.3930, v = [0.9925, -0.1222, -0.0000])
-    cylinder(h = 4.5153, r = 0.23, $fn=60);
+    cylinder(h = 4.5153, r = 0.28, $fn=60);
 translate([1.0000, -3.5000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Hole from [-0.21, -4.15, 3.75] to [-1, -3.5, -2]
-translate([-1.0464, -3.4618, 0.3092])
+translate([-1.0000, -3.5000, 0.5000])
 rotate(a = 17.4730, v = [0.6354, 0.7722, -0.0000])
-    cylinder(h = 4.6072, r = 0.23, $fn=60);
+    cylinder(h = 4.6072, r = 0.28, $fn=60);
 translate([-1.0000, -3.5000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
+        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
 // Ground hole from [4.15, 1.14, 3.75] to [3, 1, -1.8]
 translate([2.9333, 0.9919, 0.3116])
 rotate(a = 19.6190, v = [-0.1208, 0.9927, -0.0000])
-    cylinder(h = 4.6503, r = 0.35, $fn=60);
+    cylinder(h = 4.6503, r = 0.4, $fn=60);
 translate([3.0000, 1.0000, 0])
-    cylinder(h = 0.5, r = 0.35+0.05, $fn=60);
+    cylinder(h = 0.5, r = 0.4+0.05, $fn=60);
 
 }

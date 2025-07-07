@@ -71,11 +71,11 @@ holes = [
 ground_holes = [
     (A9Ground, GroundRegion1_updated)]
 
-hole_radius = 0.23
-ground_radius = 0.35
+hole_radius = 0.28
+ground_radius = 0.4
 desired_exit_z = 0.5  # Desired Z coordinate for the exit point
-stl_file = "BlankMouseImplant.stl"
-stl2_file = "BlankDepthGuide.stl"
+stl_file = "BlankMouseImplantv2.stl"
+stl2_file = "BlankDepthGuidev2.stl"
 
 def vec_sub(a, b):
     return [a[i] - b[i] for i in range(3)]
@@ -130,6 +130,8 @@ for entry, exit in holes:
     extra = 0.2
     base_point = [exit[i] + unit_vec[i] * extra for i in range(3)]
     height = desired_exit_z + unit_vec[2] * extra
+    base_point = [exit[i] for i in range(3)]
+    height = desired_exit_z 
     angle = angle_between(vec)
     axis = rotation_axis(vec)
     angle, axis = flip_angle_axis(angle, axis, vec)
@@ -139,7 +141,7 @@ translate([{base_point[0]:.4f}, {base_point[1]:.4f}, {height:.4f}])
 rotate(a = {angle:.4f}, v = [{axis[0]:.4f}, {axis[1]:.4f}, {axis[2]:.4f}])
     cylinder(h = {length + 1.2:.4f}, r = {hole_radius}, $fn=60);
 translate([{exit[0]:.4f}, {exit[1]:.4f}, 0])
-        cylinder(h = {desired_exit_z}, r = {hole_radius}+0.05, $fn=60);
+        cylinder(h = {desired_exit_z}+0.2, r = {hole_radius}, $fn=60);
 """
     
 for entry_g, exit_g in ground_holes:
@@ -189,7 +191,7 @@ for entry, exit in holes:
 
     depth_guide_scad += f"""
 translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
-    cylinder(h = 10, r = {hole_radius} +0.05, $fn=60);
+    cylinder(h = 10, r = {hole_radius}, $fn=60);
 """
 
 for entry, exit in ground_holes:

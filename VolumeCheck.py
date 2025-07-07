@@ -9,8 +9,8 @@ volume_mm3 = mesh.volume
 volume_cm3 = volume_mm3 / 1000
 
 # Resin density (example: 1.12 g/cm³)
-density = 1.12  # g/cm³
-weight = volume_cm3 * density
+density = 1.05  # g/cm³
+weight = volume_cm3 * density +0.2 # from board
 
 print(f"Volume: {volume_cm3:.2f} cm³")
 print(f"Estimated weight: {weight:.2f} g")
