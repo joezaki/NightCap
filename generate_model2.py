@@ -20,7 +20,8 @@ B1 = [2.05,-4.15,3.75]
 B2 = [0.92,-4.15,3.75]
 B3 = [-0.21,-4.15,3.75]
 B4 = [-1.34,-4.15,3.75]
-# Brain Regions (ML, AP, DV)
+
+# Brain Regions (ML, AP, DV) Add up to 12
 Region1 = [0.3, 2.2, -2.5]
 Region2 = [-0.3, 2.2, -2.5]
 Region3 = [1.3, -2.0, -1.5]
@@ -120,6 +121,7 @@ rotate(a = {angle:.4f}, v = [{axis[0]:.4f}, {axis[1]:.4f}, {axis[2]:.4f}])
 translate([{exit[0]:.4f}, {exit[1]:.4f}, 0])
         cylinder(h = 1, r = {hole_radius}+0.07, $fn=60);
 """
+    
 
 final_scad = f"""
 difference() {{
