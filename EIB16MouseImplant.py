@@ -4,26 +4,26 @@ import math
 openscad_path = "C:/Program Files/OpenSCAD/openscad.exe"  # Use forward slashes
 
 # Define all electrode entrances
-A1 = [-4.2,0.36,3.75]
-A2 = [-4.2,1.49,3.75]
-A3 = [-4.2, 2.62,3.75]
-A4 = [-4.2, 3.75,3.75]
-A5 = [-2.05,4.15,3.75]
-A6 = [-0.92,4.15,3.75]
-A7 = [0.21,4.15,3.75]
-A8 = [1.34,4.15,3.75]
-A9 = [4.2,-0.36, 3.75]
-A10 = [4.2,-1.49,3.75]
-A11 = [4.2,-2.62,3.75]
-A12 = [4.2,-3.75,3.75]
-B1 = [2.05,-4.15,3.75]
-B2 = [0.92,-4.15,3.75]
-B3 = [-0.21,-4.15,3.75]
-B4 = [-1.34,-4.15,3.75]
+A1 = [-4.2,0.36,4.75]
+A2 = [-4.2,1.49,4.75]
+A3 = [-4.2, 2.62,4.75]
+A4 = [-4.2, 3.75,4.75]
+A5 = [-2.05,4.15,4.75]
+A6 = [-0.92,4.15,4.75]
+A7 = [0.21,4.15,4.75]
+A8 = [1.34,4.15,4.75]
+A9 = [4.2,-0.36,4.75]
+A10 = [4.2,-1.49,4.75]
+A11 = [4.2,-2.62,4.75]
+A12 = [4.2,-3.75,4.75]
+B1 = [2.05,-4.15,4.75]
+B2 = [0.92,-4.15,4.75]
+B3 = [-0.21,-4.15,4.75]
+B4 = [-1.34,-4.15,4.75]
 
 
-A9Ground = [4.15,1.14, 3.75]
-A1Ground = [-4.15,-1.14, 3.75]
+A9Ground = [4.15,1.14, 4.75]
+A1Ground = [-4.15,-1.14,4.75]
 
 # Brain Regions (ML, AP, DV) up to 12
 Region1 = [0.4, 2.2, -2.5]
@@ -73,9 +73,9 @@ ground_holes = [
 
 hole_radius = 0.34
 ground_radius = 0.4
-desired_exit_z = 1  # Desired Z coordinate for the exit point
-stl_file = "BlankMouseImplantv2.stl"
-stl2_file = "BlankDepthGuidev2.stl"
+desired_exit_z = 2  # Desired Z coordinate for the exit point
+stl_file = "BlankMouseImplantv3.stl"
+stl2_file = "BlankDepthGuidev5.stl"
 
 def vec_sub(a, b):
     return [a[i] - b[i] for i in range(3)]
@@ -173,7 +173,7 @@ with open("EIB16MouseImplant.scad", "w") as f:
 
 result = subprocess.run([
     openscad_path,
-    "-o", "ImplantTest1_7825.stl",
+    "-o", "ImplantTest2_71425.stl",
     "EIB16MouseImplant.scad"
 ], capture_output=True, text=True)
 
@@ -211,7 +211,7 @@ with open("DepthGuide.scad", "w") as f:
 # Render STL for wire depth guide
 result2 = subprocess.run([
     openscad_path,
-    "-o", "DepthTest1_7825.stl",
+    "-o", "DepthTest2_71425.stl",
     "DepthGuide.scad"
 ], capture_output=True, text=True)
 

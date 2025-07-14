@@ -1,6 +1,6 @@
 
 difference() {
-import("BlankDepthGuidev2.stl");
+import("BlankDepthGuidev5.stl");
 
 
 translate([1.3000, 0.0000, -1.5000])
