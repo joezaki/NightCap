@@ -75,7 +75,7 @@ hole_radius = 0.34
 ground_radius = 0.4
 desired_exit_z = 2  # Desired Z coordinate for the exit point
 stl_file = "BlankMouseImplantv3.stl"
-stl2_file = "BlankDepthGuidev5.stl"
+stl2_file = "BlankDepthGuidev6.stl"
 
 def vec_sub(a, b):
     return [a[i] - b[i] for i in range(3)]
@@ -127,9 +127,12 @@ for entry, exit in holes:
     vec = vec_sub(adjusted_exit, entry)
     length = vec_len(vec)
     unit_vec = normalize(vec)
-    extra = 0.2
+    extra = 0.11
     base_point = [exit[i] for i in range(3)]
+    height = desired_exit_z
+    base_point = [exit[i] + unit_vec[i] * extra for i in range(3)]
     height = desired_exit_z 
+    height_z = desired_exit_z + 0.232 
     angle = angle_between(vec)
     axis = rotation_axis(vec)
     angle, axis = flip_angle_axis(angle, axis, vec)
@@ -139,7 +142,7 @@ translate([{base_point[0]:.4f}, {base_point[1]:.4f}, {height:.4f}])
 rotate(a = {angle:.4f}, v = [{axis[0]:.4f}, {axis[1]:.4f}, {axis[2]:.4f}])
     cylinder(h = {length + 1.2:.4f}, r = {hole_radius}, $fn=60);
 translate([{exit[0]:.4f}, {exit[1]:.4f}, 0])
-        cylinder(h = {desired_exit_z}+0.25, r = {hole_radius}, $fn=60);
+        cylinder(h = {height_z}, r = {hole_radius}, $fn=60);
 """
     
 for entry_g, exit_g in ground_holes:
@@ -147,9 +150,13 @@ for entry_g, exit_g in ground_holes:
     vec_g = vec_sub(adjusted_exit_g, entry_g)
     length_g = vec_len(vec_g)
     unit_vec_g = normalize(vec_g)
-    extra_g = 0.2
+    extra_g = 0.11
     base_point_g = [exit_g[i] for i in range(3)]
     height_g = desired_exit_z 
+    height_z = desired_exit_z + 0.15 
+    base_point_g = [exit_g[i] + unit_vec_g[i] * extra_g for i in range(3)]
+    height = desired_exit_z 
+    height_z_g = desired_exit_z + 0.232 
     angle_g = angle_between(vec_g)
     axis_g = rotation_axis(vec_g)
     angle_g, axis_g = flip_angle_axis(angle_g, axis_g, vec_g)
@@ -159,7 +166,7 @@ translate([{base_point_g[0]:.4f}, {base_point_g[1]:.4f}, {height_g:.4f}])
 rotate(a = {angle_g:.4f}, v = [{axis_g[0]:.4f}, {axis_g[1]:.4f}, {axis_g[2]:.4f}])
     cylinder(h = {length_g + 1.2:.4f}, r = {ground_radius}, $fn=60);
 translate([{exit_g[0]:.4f}, {exit_g[1]:.4f}, 0])
-    cylinder(h = {desired_exit_z}+0.25, r = {ground_radius}, $fn=60);
+    cylinder(h = {height_z_g}, r = {ground_radius}, $fn=60);
 """
     
 final_scad = f"""
@@ -173,7 +180,7 @@ with open("EIB16MouseImplant.scad", "w") as f:
 
 result = subprocess.run([
     openscad_path,
-    "-o", "ImplantTest2_71425.stl",
+    "-o", "ImplantTest_71825.stl",
     "EIB16MouseImplant.scad"
 ], capture_output=True, text=True)
 
@@ -211,7 +218,7 @@ with open("DepthGuide.scad", "w") as f:
 # Render STL for wire depth guide
 result2 = subprocess.run([
     openscad_path,
-    "-o", "DepthTest2_71425.stl",
+    "-o", "DepthTest_71825.stl",
     "DepthGuide.scad"
 ], capture_output=True, text=True)
 
