@@ -85,7 +85,6 @@ hole_radius = 0.34
 ground_radius = 0.4
 desired_exit_z = 1.5  # Desired Z coordinate for the exit point
 stl_file = "BlankMouseImplantv3.stl"
-stl2_file = "BlankDepthGuidev6.stl"
 
 def vec_sub(a, b):
     return [a[i] - b[i] for i in range(3)]
@@ -190,7 +189,7 @@ with open("EIB16MouseImplantCortex.scad", "w") as f:
 
 result = subprocess.run([
     openscad_path,
-    "-o", "ImplantTestCortex_72825.stl",
+    "-o", "ImplantTestCortex_73125.stl",
     "EIB16MouseImplantCortex.scad"
 ], capture_output=True, text=True)
 
@@ -200,26 +199,37 @@ if result.returncode != 0:
 else:
     print("✅ EIB16MouseImplantCompleted.stl generated successfully!")
 
-depth_guide_scad = f'import("{stl2_file}");\n\n'
+outer_radius = 0.4
+inner_radius = 0.3
+depth_guide_scad = ""
+for i, (entry, exit) in enumerate(holes):
+    if i % 2 == 0:
+        height_depth = -exit[2]
+        depth_guide_scad += f"""
+difference() {{
+    translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
+        cylinder(h = {height_depth}, r = {outer_radius}, $fn=60);
 
-for entry, exit in holes:
-
-    depth_guide_scad += f"""
-translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
-    cylinder(h = 10, r = {hole_radius}, $fn=60);
+    translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
+        cylinder(h = {height_depth}, r = {inner_radius}, $fn=60);
+}}
 """
 
 for entry, exit in ground_holes:
-
+    height_depth_g = -exit[2]
     depth_guide_scad += f"""
-translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
-    cylinder(h = 10, r = {ground_radius}, $fn=60);
-"""
+    difference() {{
+        translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
+            cylinder(h = {height_depth_g}, r = {outer_radius}, $fn=60);
 
-final_depth_guide_scad = f"""
-difference() {{
-{depth_guide_scad}
+        translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
+            cylinder(h = {height_depth_g}, r = {inner_radius}, $fn=60);
 }}
+"""
+final_depth_guide_scad = f"""
+
+{depth_guide_scad}
+
 """
 # Write .scad file for wire depth guide
 with open("DepthGuideCortex.scad", "w") as f:
@@ -228,7 +238,7 @@ with open("DepthGuideCortex.scad", "w") as f:
 # Render STL for wire depth guide
 result2 = subprocess.run([
     openscad_path,
-    "-o", "DepthTestCortex_72825.stl",
+    "-o", "DepthTestCortex_73125.stl",
     "DepthGuideCortex.scad"
 ], capture_output=True, text=True)
 
