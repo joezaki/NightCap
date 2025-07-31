@@ -199,31 +199,33 @@ if result.returncode != 0:
 else:
     print("✅ EIB16MouseImplantCompleted.stl generated successfully!")
 
-outer_radius = 0.4
-inner_radius = 0.3
+outer_radius = 0.5
+inner_radius = 0.28
+outer_radius_g = 0.6
+inner_radius_g = 0.3
 depth_guide_scad = ""
 for i, (entry, exit) in enumerate(holes):
     if i % 2 == 0:
         height_depth = -exit[2]
         depth_guide_scad += f"""
 difference() {{
-    translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
+    translate([{0.7*i}, {0}, {exit[2]:.4f}])
         cylinder(h = {height_depth}, r = {outer_radius}, $fn=60);
 
-    translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
+    translate([{0.7*i}, {0}, {exit[2]:.4f}])
         cylinder(h = {height_depth}, r = {inner_radius}, $fn=60);
 }}
 """
 
-for entry, exit in ground_holes:
+for i, (entry, exit) in enumerate(ground_holes):
     height_depth_g = -exit[2]
     depth_guide_scad += f"""
     difference() {{
-        translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
-            cylinder(h = {height_depth_g}, r = {outer_radius}, $fn=60);
+        translate([{i}, {2}, {exit[2]:.4f}])
+            cylinder(h = {height_depth_g}, r = {outer_radius_g}, $fn=60);
 
-        translate([{exit[0]:.4f}, {exit[1]:.4f}, {exit[2]:.4f}])
-            cylinder(h = {height_depth_g}, r = {inner_radius}, $fn=60);
+        translate([{i}, {2}, {exit[2]:.4f}])
+            cylinder(h = {height_depth_g}, r = {inner_radius_g}, $fn=60);
 }}
 """
 final_depth_guide_scad = f"""
