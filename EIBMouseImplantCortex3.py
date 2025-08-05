@@ -253,9 +253,9 @@ else:
 depth_guide_scad = f'import("{stl2_file}");\n\n'
 depth_guide_scad1 = ''
 depth_guide_scad2 = ''
-outer_radius = 0.55
+outer_radius = 0.6
 inner_radius = 0.32
-outer_radius_g = 0.55  
+outer_radius_g = 0.6  
 inner_radius_g = 0.34
 for label, (entry, exit) in holes_dict.items():
     height_depth = -exit[2]
