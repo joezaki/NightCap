@@ -1,142 +1,169 @@
 
 difference() {
 // Import your STL model
-import("HoleCheckBlank.stl");
+import("HoleCheckBlankv3.stl");
 
-// Hole check from [6, 6.0, 3.75] to [6, 6.0, 0]
-translate([6.0000, 6.0000, 0])
-    cylinder(h = 3.75, r = 0.1, $fn=60);
-// Hole check from [6, 4.5, 3.75] to [6, 4.5, 0]
-translate([6.0000, 4.5000, 0])
-    cylinder(h = 3.75, r = 0.16, $fn=60);
-// Hole check from [6, 3.0, 3.75] to [6, 3.0, 0]
-translate([6.0000, 3.0000, 0])
-    cylinder(h = 3.75, r = 0.22, $fn=60);
-// Hole check from [6, 1.5, 3.75] to [6, 1.5, 0]
-translate([6.0000, 1.5000, 0])
-    cylinder(h = 3.75, r = 0.28, $fn=60);
-// Hole check from [6, 0.0, 3.75] to [6, 0.0, 0]
-translate([6.0000, 0.0000, 0])
-    cylinder(h = 3.75, r = 0.33999999999999997, $fn=60);
-// Hole check from [6, -1.5, 3.75] to [6, -1.5, 0]
-translate([6.0000, -1.5000, 0])
-    cylinder(h = 3.75, r = 0.4, $fn=60);
-// Hole check from [6, -3.0, 3.75] to [6, -3.0, 0]
-translate([6.0000, -3.0000, 0])
-    cylinder(h = 3.75, r = 0.45999999999999996, $fn=60);
-// Hole check from [6, -4.5, 3.75] to [6, -4.5, 0]
-translate([6.0000, -4.5000, 0])
-    cylinder(h = 3.75, r = 0.52, $fn=60);
-// Hole check from [6, -6.0, 3.75] to [6, -6.0, 0]
-translate([6.0000, -6.0000, 0])
-    cylinder(h = 3.75, r = 0.58, $fn=60);
-// Hole from [4, 6, 3.75] to [4, 6, 0.5]
-translate([4.0000, 6.0000, 0.5000])
-rotate(a = 0.0000, v = [-1.0000, 0.0000, 0.0000])
-    cylinder(h = 4.4500, r = 0.28, $fn=60);
-translate([4.0000, 6.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
-// Hole from [4, 5, 3.75] to [4, 4, 0.5]
-translate([4.0000, 4.0000, 0.5000])
-rotate(a = 17.1027, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 4.6004, r = 0.28, $fn=60);
-translate([4.0000, 4.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
-// Hole from [4, 4, 3.75] to [4, 2, 0.5]
-translate([4.0000, 2.0000, 0.5000])
-rotate(a = 31.6075, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.0161, r = 0.28, $fn=60);
-translate([4.0000, 2.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
-// Hole from [4, 3, 3.75] to [4, 0, 0.5]
-translate([4.0000, 0.0000, 0.5000])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.28, $fn=60);
-translate([4.0000, 0.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
-// Hole from [4, 2, 3.75] to [4, -2, 0.5]
-translate([4.0000, -2.0000, 0.5000])
-rotate(a = 50.9061, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 6.3539, r = 0.28, $fn=60);
-translate([4.0000, -2.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
-// Hole from [4, 1, 3.75] to [4, -4, 0.5]
-translate([4.0000, -4.0000, 0.5000])
-rotate(a = 56.9761, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 7.1634, r = 0.28, $fn=60);
-translate([4.0000, -4.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
-// Hole from [2, 6, 3.75] to [2, 6, 0.5]
-translate([2.0000, 6.0000, 0.3000])
-rotate(a = 0.0000, v = [-1.0000, 0.0000, 0.0000])
-    cylinder(h = 4.4500, r = 0.23, $fn=60);
-translate([2.0000, 6.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
-// Hole from [2, 5, 3.75] to [2, 4, 0.5]
-translate([2.0000, 3.9412, 0.3088])
-rotate(a = 17.1027, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 4.6004, r = 0.23, $fn=60);
-translate([2.0000, 4.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
-// Hole from [2, 4, 3.75] to [2, 2, 0.5]
-translate([2.0000, 1.8952, 0.3297])
-rotate(a = 31.6075, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.0161, r = 0.23, $fn=60);
-translate([2.0000, 2.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
-// Hole from [2, 3, 3.75] to [2, 0, 0.5]
-translate([2.0000, -0.1357, 0.3530])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.23, $fn=60);
-translate([2.0000, 0.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
-// Hole from [2, 2, 3.75] to [2, -2, 0.5]
-translate([2.0000, -2.1552, 0.3739])
-rotate(a = 50.9061, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 6.3539, r = 0.23, $fn=60);
-translate([2.0000, -2.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
-// Hole from [2, 1, 3.75] to [2, -4, 0.5]
-translate([2.0000, -4.1677, 0.3910])
-rotate(a = 56.9761, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 7.1634, r = 0.23, $fn=60);
-translate([2.0000, -4.0000, 0])
-        cylinder(h = 0.5, r = 0.23+0.05, $fn=60);
-// Hole from [0, 6.0, 3.75] to [0, 3.0, 0.5]
-translate([0.0000, 3.0000, 0.5000])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.1, $fn=60);
-translate([0.0000, 3.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.1, $fn=60);
-// Hole from [0, 4.5, 3.75] to [0, 1.5, 0.5]
-translate([0.0000, 1.5000, 0.5000])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.16, $fn=60);
-translate([0.0000, 1.5000, 0])
-        cylinder(h = 0.5+0.2, r = 0.16, $fn=60);
-// Hole from [0, 3.0, 3.75] to [0, 0.0, 0.5]
-translate([0.0000, 0.0000, 0.5000])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.22, $fn=60);
-translate([0.0000, 0.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.22, $fn=60);
-// Hole from [0, 1.5, 3.75] to [0, -1.5, 0.5]
-translate([0.0000, -1.5000, 0.5000])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.28, $fn=60);
-translate([0.0000, -1.5000, 0])
-        cylinder(h = 0.5+0.2, r = 0.28, $fn=60);
-// Hole from [0, 0.0, 3.75] to [0, -3.0, 0.5]
-translate([0.0000, -3.0000, 0.5000])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.33999999999999997, $fn=60);
-translate([0.0000, -3.0000, 0])
-        cylinder(h = 0.5+0.2, r = 0.33999999999999997, $fn=60);
-// Hole from [0, -1.5, 3.75] to [0, -4.5, 0.5]
-translate([0.0000, -4.5000, 0.5000])
-rotate(a = 42.7094, v = [-1.0000, -0.0000, 0.0000])
-    cylinder(h = 5.6230, r = 0.4, $fn=60);
-translate([0.0000, -4.5000, 0])
-        cylinder(h = 0.5+0.2, r = 0.4, $fn=60);
+
+translate([6.5000, 6.0000, 0])
+    cylinder(h = 5, r = 0.1, $fn=60);
+
+translate([6.5000, 4.5000, 0])
+    cylinder(h = 5, r = 0.11, $fn=60);
+
+translate([6.5000, 3.0000, 0])
+    cylinder(h = 5, r = 0.12000000000000001, $fn=60);
+
+translate([6.5000, 1.5000, 0])
+    cylinder(h = 5, r = 0.13, $fn=60);
+
+translate([6.5000, 0.0000, 0])
+    cylinder(h = 5, r = 0.14, $fn=60);
+
+translate([6.5000, -1.5000, 0])
+    cylinder(h = 5, r = 0.15000000000000002, $fn=60);
+
+translate([6.5000, -3.0000, 0])
+    cylinder(h = 5, r = 0.16, $fn=60);
+
+translate([6.5000, -4.5000, 0])
+    cylinder(h = 5, r = 0.17, $fn=60);
+
+translate([6.5000, -6.0000, 0])
+    cylinder(h = 5, r = 0.18, $fn=60);
+
+translate([5.3000, 6.0000, 0])
+    cylinder(h = 5, r = 0.2, $fn=60);
+
+translate([5.3000, 4.5000, 0])
+    cylinder(h = 5, r = 0.21000000000000002, $fn=60);
+
+translate([5.3000, 3.0000, 0])
+    cylinder(h = 5, r = 0.22, $fn=60);
+
+translate([5.3000, 1.5000, 0])
+    cylinder(h = 5, r = 0.23, $fn=60);
+
+translate([5.3000, 0.0000, 0])
+    cylinder(h = 5, r = 0.24000000000000002, $fn=60);
+
+translate([5.3000, -1.5000, 0])
+    cylinder(h = 5, r = 0.25, $fn=60);
+
+translate([5.3000, -3.0000, 0])
+    cylinder(h = 5, r = 0.26, $fn=60);
+
+translate([5.3000, -4.5000, 0])
+    cylinder(h = 5, r = 0.27, $fn=60);
+
+translate([5.3000, -6.0000, 0])
+    cylinder(h = 5, r = 0.28, $fn=60);
+
+translate([4.1000, 6.0000, 0])
+    cylinder(h = 5, r = 0.3, $fn=60);
+
+translate([4.1000, 4.5000, 0])
+    cylinder(h = 5, r = 0.31, $fn=60);
+
+translate([4.1000, 3.0000, 0])
+    cylinder(h = 5, r = 0.32, $fn=60);
+
+translate([4.1000, 1.5000, 0])
+    cylinder(h = 5, r = 0.32999999999999996, $fn=60);
+
+translate([4.1000, 0.0000, 0])
+    cylinder(h = 5, r = 0.33999999999999997, $fn=60);
+
+translate([4.1000, -1.5000, 0])
+    cylinder(h = 5, r = 0.35, $fn=60);
+
+translate([4.1000, -3.0000, 0])
+    cylinder(h = 5, r = 0.36, $fn=60);
+
+translate([4.1000, -4.5000, 0])
+    cylinder(h = 5, r = 0.37, $fn=60);
+
+translate([4.1000, -6.0000, 0])
+    cylinder(h = 5, r = 0.38, $fn=60);
+
+translate([2.9000, 6.0000, 0])
+    cylinder(h = 5, r = 0.1, $fn=60);
+
+translate([2.9000, 4.5000, 0])
+    cylinder(h = 5, r = 0.11, $fn=60);
+
+translate([2.9000, 3.0000, 0])
+    cylinder(h = 5, r = 0.12000000000000001, $fn=60);
+
+translate([2.9000, 1.5000, 0])
+    cylinder(h = 5, r = 0.13, $fn=60);
+
+translate([2.9000, 0.0000, 0])
+    cylinder(h = 5, r = 0.14, $fn=60);
+
+translate([2.9000, -1.5000, 0])
+    cylinder(h = 5, r = 0.15000000000000002, $fn=60);
+
+translate([2.9000, -3.0000, 0])
+    cylinder(h = 5, r = 0.16, $fn=60);
+
+translate([2.9000, -4.5000, 0])
+    cylinder(h = 5, r = 0.17, $fn=60);
+
+translate([2.9000, -6.0000, 0])
+    cylinder(h = 5, r = 0.18, $fn=60);
+
+translate([1.7000, 6.0000, 0])
+    cylinder(h = 5, r = 0.2, $fn=60);
+
+translate([1.7000, 4.5000, 0])
+    cylinder(h = 5, r = 0.21000000000000002, $fn=60);
+
+translate([1.7000, 3.0000, 0])
+    cylinder(h = 5, r = 0.22, $fn=60);
+
+translate([1.7000, 1.5000, 0])
+    cylinder(h = 5, r = 0.23, $fn=60);
+
+translate([1.7000, 0.0000, 0])
+    cylinder(h = 5, r = 0.24000000000000002, $fn=60);
+
+translate([1.7000, -1.5000, 0])
+    cylinder(h = 5, r = 0.25, $fn=60);
+
+translate([1.7000, -3.0000, 0])
+    cylinder(h = 5, r = 0.26, $fn=60);
+
+translate([1.7000, -4.5000, 0])
+    cylinder(h = 5, r = 0.27, $fn=60);
+
+translate([1.7000, -6.0000, 0])
+    cylinder(h = 5, r = 0.28, $fn=60);
+
+translate([0.5000, 6.0000, 0])
+    cylinder(h = 5, r = 0.3, $fn=60);
+
+translate([0.5000, 4.5000, 0])
+    cylinder(h = 5, r = 0.31, $fn=60);
+
+translate([0.5000, 3.0000, 0])
+    cylinder(h = 5, r = 0.32, $fn=60);
+
+translate([0.5000, 1.5000, 0])
+    cylinder(h = 5, r = 0.32999999999999996, $fn=60);
+
+translate([0.5000, 0.0000, 0])
+    cylinder(h = 5, r = 0.33999999999999997, $fn=60);
+
+translate([0.5000, -1.5000, 0])
+    cylinder(h = 5, r = 0.35, $fn=60);
+
+translate([0.5000, -3.0000, 0])
+    cylinder(h = 5, r = 0.36, $fn=60);
+
+translate([0.5000, -4.5000, 0])
+    cylinder(h = 5, r = 0.37, $fn=60);
+
+translate([0.5000, -6.0000, 0])
+    cylinder(h = 5, r = 0.38, $fn=60);
 
 }

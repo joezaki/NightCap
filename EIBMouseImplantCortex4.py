@@ -117,10 +117,10 @@ holes_dict = {
 ground_holes = [ (A1Ground, GroundRegion1_updated)
     ]
 
-hole_radius = 0.34
+hole_radius = 0.26
 ground_radius = 0.4
-stl_file = "BlankMouseImplantShapedv3.stl"
-stl2_file = "BlankDepthGuidev7.stl"
+stl_file = "BlankMouseImplantShapedv4.stl"
+stl2_file = "BlankDepthGuideShapedv0.stl"
 hole_labels = [label for (label, _) in holes]
 hole_positions = [exit for (_, exit) in holes_dict.values()]
 label_radius = 1  # Collision radius for label placement
@@ -182,7 +182,7 @@ with open("EIB16MouseImplantCortex.scad", "w") as f:
 
 result = subprocess.run([
     openscad_path,
-    "-o", "ImplantTestCortex_8525.stl",
+    "-o", "ImplantTestCortex2_8825.stl",
     "EIB16MouseImplantCortex.scad"
 ], capture_output=True, text=True)
 
@@ -197,9 +197,7 @@ depth_guide_scad = f'import("{stl2_file}");\n\n'
 depth_guide_scad1 = ''
 depth_guide_scad2 = ''
 outer_radius = 0.6
-inner_radius = 0.32
-outer_radius_g = 0.6  
-inner_radius_g = 0.34
+inner_radius = 0.26
 for label, (entry, exit) in holes_dict.items():
     height_depth = -exit[2]
     depth_guide_scad1 += f"""
@@ -233,7 +231,7 @@ with open("DepthGuideCortex.scad", "w") as f:
 # Render STL for wire depth guide
 result2 = subprocess.run([
     openscad_path,
-    "-o", "DepthTestCortex_8525.stl",
+    "-o", "DepthTestCortex2_8825.stl",
     "DepthGuideCortex.scad"
 ], capture_output=True, text=True)
 

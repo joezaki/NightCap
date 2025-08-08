@@ -201,9 +201,11 @@ else:
 
 outer_radius = 0.5
 inner_radius = 0.28
-outer_radius_g = 0.6
+outer_radius_g = 0.6  
 inner_radius_g = 0.3
 depth_guide_scad = ""
+flag_length=0.5
+flag_thickness=0.2
 for i, (entry, exit) in enumerate(holes):
     if i % 2 == 0:
         height_depth = -exit[2]
@@ -214,6 +216,8 @@ difference() {{
 
     translate([{0.7*i}, {0}, {exit[2]:.4f}])
         cylinder(h = {height_depth}, r = {inner_radius}, $fn=60);
+    translate([{0.7*i}, {0 - outer_radius:.4f}, {exit[2]:.4f}])
+    cube([{flag_length}, {flag_thickness}, {height_depth:.4f}]);
 }}
 """
 
