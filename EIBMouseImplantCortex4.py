@@ -114,18 +114,15 @@ holes_dict = {
     "B3":  (B3,  Region16_updated),
     "GNDA1": (A1Ground, GroundRegion1_updated),
 }
-ground_holes = [ (A1Ground, GroundRegion1_updated)
-    ]
 
-hole_radius = 0.26
-ground_radius = 0.4
+hole_radius = 0.27
 stl_file = "BlankMouseImplantShapedv4.stl"
-stl2_file = "BlankDepthGuideShapedv0.stl"
+stl2_file = "BlankDepthGuideShapedv3.stl"
+#Blank Depth Guide Shaped v3 has larger fit than v2. 
 hole_labels = [label for (label, _) in holes]
 hole_positions = [exit for (_, exit) in holes_dict.values()]
 label_radius = 1  # Collision radius for label placement
 label_size = 0.25
-hole_collision_radius = 0.75
 
 
 def vec_sub(a, b):
@@ -165,10 +162,15 @@ scad_code = f"// Import your STL model\nimport(\"{stl_file}\");\n\n"
 for label, (entry, exit) in holes_dict.items():
     # Vector from entry to exit
     adjusted_exit = [exit[0], exit[1], 0]
+    if label.upper().startswith("GND"):
+        r = hole_radius + 0.1  
+    else:
+        r = hole_radius  
+
 
     scad_code += f"""// Hole from {entry} to {exit}
 translate([{exit[0]:.4f}, {exit[1]:.4f}, 0])
-        cylinder(h = {5}, r = {hole_radius}, $fn=60);
+        cylinder(h = {5}, r = {r}, $fn=60);
 """
 
 final_scad = f"""
@@ -182,7 +184,7 @@ with open("EIB16MouseImplantCortex.scad", "w") as f:
 
 result = subprocess.run([
     openscad_path,
-    "-o", "ImplantTestCortex2_8825.stl",
+    "-o", "ImplantTestCortex2_81025.stl",
     "EIB16MouseImplantCortex.scad"
 ], capture_output=True, text=True)
 
@@ -197,19 +199,27 @@ depth_guide_scad = f'import("{stl2_file}");\n\n'
 depth_guide_scad1 = ''
 depth_guide_scad2 = ''
 outer_radius = 0.6
-inner_radius = 0.26
+inner_radius = 0.27
 for label, (entry, exit) in holes_dict.items():
+    if label.upper().startswith("GND"):
+        r = outer_radius + 0.1
+    else:
+        r = outer_radius  
     height_depth = -exit[2]
     depth_guide_scad1 += f"""
     translate([{exit[0]}, {exit[1]}, {exit[2]:.4f}])
-        cylinder(h = {height_depth:.4f}, r = {outer_radius}, $fn=60);
+        cylinder(h = {height_depth:.4f}, r = {r}, $fn=60);
 """
 
 for label, (entry, exit) in holes_dict.items():
+    if label.upper().startswith("GND"):
+        r = inner_radius + 0.1
+    else:
+        r = inner_radius
     height_depth = -exit[2]
     depth_guide_scad2 += f"""
     translate([{exit[0]}, {exit[1]}, {exit[2]:.4f}])
-        cylinder(h = {height_depth:.4f}, r = {inner_radius}, $fn=60);
+        cylinder(h = {height_depth:.4f}, r = {r}, $fn=60);
 """
 
 # Final SCAD: difference of outer – inner
@@ -231,7 +241,7 @@ with open("DepthGuideCortex.scad", "w") as f:
 # Render STL for wire depth guide
 result2 = subprocess.run([
     openscad_path,
-    "-o", "DepthTestCortex2_8825.stl",
+    "-o", "DepthTestCortex2_81025.stl",
     "DepthGuideCortex.scad"
 ], capture_output=True, text=True)
 
