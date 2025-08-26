@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Polygon
 import os
 
+
 output_folder = "Generated Files"
 os.makedirs(output_folder, exist_ok=True)
 scad_folder = "SCAD Files"
