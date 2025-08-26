@@ -1,0 +1,12 @@
+name: mouse_implant
+channels:
+  - conda-forge
+  - anaconda
+  - defaults
+dependencies:
+  - python=3.13
+  - cvxpy
+  - jupyter
+  - numpy
+  - pandas
+  - plotly
