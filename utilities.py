@@ -192,41 +192,47 @@ def plot_3d_mapping(
     '''
 
     # construct mesh coordinates for implant
-    implant_mesh = np.concatenate((implant_boundary, 
-                                np.repeat(implant_height, implant_boundary.shape[0]).reshape((implant_boundary.shape[0],1))), axis=1)
+    implant_mesh = np.concatenate((implant_boundary,
+                                   np.repeat(implant_height,
+                                             implant_boundary.shape[0]).reshape((implant_boundary.shape[0],1))),
+                                             axis=1)
+    implant_height_mesh = np.repeat(0, implant_boundary.shape[0]).reshape((implant_boundary.shape[0],1))
     implant_mesh = np.append(implant_mesh,
-                            np.concatenate((implant_boundary, 
-                                            np.repeat(0, implant_boundary.shape[0]).reshape((implant_boundary.shape[0],1))), axis=1), axis=0)
+                             np.concatenate((implant_boundary, implant_height_mesh), axis=1), axis=0)
 
     fig = go.Figure()
 
     # plot mesh for implant outline
     fig.add_trace(go.Mesh3d(x=implant_mesh[:,0], y=implant_mesh[:,1], z=implant_mesh[:,2],
-                            color='grey', opacity=0.5, alphahull=0.1, name='Implant', hoverinfo='none'))
+                            color='grey', opacity=0.5, alphahull=0.1, name='Implant',
+                            hoverinfo='none', showlegend=True))
 
     # show mesh for eib (using the boundaries around the eib channels)
     fig.add_trace(go.Mesh3d(x=holes_df['eML'], y=holes_df['eAP'], z=holes_df['eDV']+eib_offset,
-                            color='gold', opacity=0.5, name='EIB', hoverinfo='none'))
+                            color='gold', opacity=0.5, name='EIB',
+                            hoverinfo='none', showlegend=True))
 
     # plot holes for implant
     fig.add_trace(go.Scatter3d(x=holes_df['rML'], y=holes_df['rAP'], z=np.repeat(implant_height, holes_df.shape[0]),
                                text=holes_df['Region'], mode='markers', marker=dict(color='white', size=10),
+                               hoverinfo='text', showlegend=False,
                                hovertext=['{ch}<br>ML:{ml}<br>AP:{ap}<br>DV:{dv}'.format(
                                    ch=row['Channel'],
                                    ml=np.round(row['rML'],3),
                                    ap=np.round(row['rAP'],3),
-                                   dv=np.round(row['rDV'],3)) for _,row in holes_df.iterrows()],
-                                   hoverinfo='text'))
+                                   dv=np.round(row['rDV'],3)) for _,row in holes_df.iterrows()]))
 
     # plot eib channels
-    fig.add_trace(go.Scatter3d(x=holes_df['eML'], y=holes_df['eAP'], z=np.repeat(implant_height+eib_offset, holes_df.shape[0]),
-                               text=holes_df['Channel'], mode='markers+text', marker=dict(color='gold', size=10)))
+    fig.add_trace(go.Scatter3d(x=holes_df['eML'], y=holes_df['eAP'],
+                               z=np.repeat(implant_height+eib_offset, holes_df.shape[0]),
+                               text=holes_df['Channel'], mode='markers+text',
+                               marker=dict(color='gold', size=10), showlegend=False))
 
     # plot mapping between EIB channels and brain regions
     for _, match in holes_df.iterrows():
         fig.add_trace(go.Scatter3d(x=match[['eML','rML']], y=match[['eAP','rAP']], z=[implant_height+eib_offset,implant_height],
                                    hovertext='{ch} -> {r}'.format(ch=match['Channel'],r=match['Region']),
-                                   hoverinfo='text', mode='lines', line=dict(color='slategrey', width=5)))
+                                   hoverinfo='text', mode='lines', line=dict(color='slategrey', width=5), showlegend=False))
         fig.add_trace(go.Scatter3d(x=np.repeat(match['rML'],2), y=np.repeat(match['rAP'],2), z=[implant_height,match['rDV']],
                                    mode='lines', line=dict(color='purple', width=4),
                                    name='{e}; {r}'.format(e=match['Channel'], r=match['Region']),
@@ -235,10 +241,11 @@ def plot_3d_mapping(
                                        ml=np.round(match['rML'],3),
                                        ap=np.round(match['rAP'],3),
                                        dv=np.round(match['rDV'],3)),
-                                       hoverinfo='text'))
+                                       hoverinfo='text',
+                                       showlegend=False))
 
     # configure plot
-    fig.update_layout(template='simple_white', width=800, height=800, font=dict(size=15), showlegend=False,
+    fig.update_layout(template='simple_white', width=800, height=800, font=dict(size=15), showlegend=True,
                       title_text=title, margin=dict(t=80, r=0, l=0, b=0),
                       scene=dict(xaxis_title='ML', yaxis_title='AP', zaxis_title='DV'),
                       scene_camera=dict(center=dict(z=-.15), eye=dict(x=-.8, y=-2, z=0.7)))
