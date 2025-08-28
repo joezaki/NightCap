@@ -40,12 +40,15 @@ depth_inner_radius = 0.27
 implant_boundary = np.array(pd.read_csv('./EIB_Boundaries/{}.csv'.format(eib_file), header=None))
 implant_boundary[:,1] -= ap_offset
 
+sort_table_by = 'Region' # one of 'Region', 'Channel', or None
+
 #%%
 ## Load EIB coordinates ##
 ##########################
 
 eib_path = './EIBs/{}.csv'.format(eib_file)
 eib_coords = pd.read_csv(eib_path)
+eib_categories = eib_coords['Channel'].values
 
 eib_coords['DV'] = implant_height
 
@@ -62,6 +65,7 @@ eib_coords = eib_coords[np.invert(eib_grounds)]
 # brain region coordinates are specified as (ML, AP, DV)
 regions_path = './StereotaxCoords/{}.csv'.format(regions_file)
 region_coords = pd.read_csv(regions_path)
+region_categories = region_coords['Region'].values
 
 # separate ground and signal brain region coordinates
 gnd_regions = [('gnd' in region.lower()) | ('ground' in region.lower()) \
@@ -91,6 +95,8 @@ holes_df = pd.concat([
     signal_matches_df,
     gnd_matches_df
 ])
+holes_df['Channel'] = pd.Categorical(holes_df['Channel'], categories=eib_categories)
+holes_df['Region'] = pd.Categorical(holes_df['Region'], categories=region_categories)
 
 hole_labels = holes_df['Channel']
 hole_positions = holes_df[['rML','rAP','rDV']].values
@@ -213,6 +219,10 @@ else:
 df_2d = holes_df.copy()
 df_2d['rAP'] -= ap_offset # reset ap_offset for plotting
 df_2d['eAP'] -= ap_offset # reset ap_offset for plotting
+
+if sort_table_by is not None:
+    df_2d = df_2d.sort_values(sort_table_by)
+
 plot_2d_mapping(
     df_2d,
     title=implant_name,
