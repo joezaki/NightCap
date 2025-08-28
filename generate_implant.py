@@ -37,7 +37,8 @@ depth_outer_radius = 0.6
 depth_inner_radius = 0.27
 
 # load boundary of the implant
-implant_boundary = pd.read_csv('./EIB_Boundaries/{}.csv'.format(eib_file))
+implant_boundary = np.array(pd.read_csv('./EIB_Boundaries/{}.csv'.format(eib_file), header=None))
+implant_boundary[:,1] -= ap_offset
 
 #%%
 ## Load EIB coordinates ##
@@ -211,6 +212,7 @@ else:
 # plot 2d mapping
 df_2d = holes_df.copy()
 df_2d['rAP'] -= ap_offset # reset ap_offset for plotting
+df_2d['eAP'] -= ap_offset # reset ap_offset for plotting
 plot_2d_mapping(
     df_2d,
     title=implant_name,
@@ -220,6 +222,8 @@ plot_2d_mapping(
 
 # plot 3d mapping
 df_3d = holes_df.copy()
+df_3d['rAP'] -= ap_offset # reset ap_offset for plotting
+df_3d['eAP'] -= ap_offset # reset ap_offset for plotting
 plot_3d_mapping(
     df_3d,
     implant_boundary=implant_boundary,
