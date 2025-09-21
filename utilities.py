@@ -83,7 +83,8 @@ def plot_2d_mapping(
     marker_size=18,
     title=None,
     save_path=None,
-    current_time=None
+    current_time=None,
+    return_fig=False
 ):
     '''
     Plots two subplots, a 2d mapping between eib channels and associated
@@ -104,6 +105,8 @@ def plot_2d_mapping(
         path to the directory where the plot will be saved. Default is None.
     current_time : str
         a datetime-based string to attach to the file name when created.
+    return_fig : bool
+        whether or not to return the fig object. Default is False.
     '''
 
     df = holes_df.copy()
@@ -157,6 +160,9 @@ def plot_2d_mapping(
     else:
         fig.show()
 
+    if return_fig:
+        return fig
+
 
 def plot_3d_mapping(
     holes_df,
@@ -165,7 +171,8 @@ def plot_3d_mapping(
     eib_offset=2,
     title=None,
     save_path=None,
-    current_time=None
+    current_time=None,
+    return_fig=False
 ):
     '''
     Plots a 3d rendering mapping channels on an EIB to its matched
@@ -189,6 +196,8 @@ def plot_3d_mapping(
         path to the directory where the plot will be saved. Default is None.
     current_time : str
         a datetime-based string to attach to the file name when created.
+    return_fig : bool
+        whether or not to return the fig object. Default is False.
     '''
 
     # construct mesh coordinates for implant
@@ -260,3 +269,6 @@ def plot_3d_mapping(
         fig.write_html(output_file)
     else:
         fig.show()
+
+    if return_fig:
+        return fig
