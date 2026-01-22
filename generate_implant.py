@@ -19,7 +19,7 @@ current_time = str(datetime.now().strftime("%Y_%m_%d__%H_%M_%S"))
 
 openscad_path = "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD" #Update this path as needed
 
-eib_file = 'Neuralynx_EIB16'
+eib_file = 'Neuralynx_EIB16-QC-H'
 regions_file = 'CTX_TH_HPC_Bilateral_16Ch'
 implant_name = '{e}_{r}'.format(e=eib_file, r=regions_file)
 save_path = './GeneratedFiles/{i}_{t}'.format(i=implant_name, t=current_time)
