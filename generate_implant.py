@@ -29,12 +29,12 @@ if not os.path.exists(save_path):
 implant_height = 4.75 # this will be the height of the implant
 ap_offset = 2 # this will be the AP offset from bregma; more positive from 0 is posterior
 
-hole_radius = 0.27
+hole_radius = 0.22
 implant_stl_file = os.path.abspath("./SCAD_Files/BlankMouseImplantShapedv4.stl")
 depth_stl_file = os.path.abspath("./SCAD_Files/BlankDepthGuideShapedv4.stl")
 
 depth_outer_radius = 0.6
-depth_inner_radius = 0.27
+depth_inner_radius = 0.22
 
 # load boundary of the implant
 implant_boundary = np.array(pd.read_csv('./EIB_Boundaries/{}.csv'.format(eib_file), header=None))
