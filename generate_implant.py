@@ -34,7 +34,7 @@ implant_stl_file = os.path.abspath("./SCAD_Files/BlankMouseImplantShapedv4.stl")
 depth_stl_file = os.path.abspath("./SCAD_Files/BlankDepthGuideShapedv4.stl")
 
 depth_outer_radius = 0.6
-depth_inner_radius = 0.22
+depth_inner_radius = hole_radius + 0.05
 
 # load boundary of the implant
 implant_boundary = np.array(pd.read_csv('./EIB_Boundaries/{}.csv'.format(eib_file), header=None))
