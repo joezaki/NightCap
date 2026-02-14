@@ -66,6 +66,7 @@ def find_nearest_matches(
 
     # the coords prefix 'e' is for EIB and 'r' for Region (i.e., brain region)
     matches_df = pd.DataFrame({'Channel':eib.iloc[matches[0]]['Channel'].values,
+                               'IntanChannel':eib.iloc[matches[0]]['IntanChannel'].values,
                                'Region' :regions.iloc[matches[1]]['Region'].values,
                                'eML':    eib.iloc[matches[0]]['ML'].values,
                                'eAP':    eib.iloc[matches[0]]['AP'].values,
@@ -137,7 +138,7 @@ def plot_2d_mapping(
 
     # plot table with mapping and brain region coordinates
     df.rename(columns={'rML':'ML','rAP':'AP', 'rDV':'DV'}, inplace=True)
-    table_cols = ['Channel','Region','ML','AP','DV']
+    table_cols = ['Channel','IntanChannel','Region','ML','AP','DV']
     df[['ML','AP','DV']] = df[['ML','AP','DV']].round(3)
     table_formats = np.repeat('str', len(table_cols))
     fig.add_trace(go.Table(header=dict(values=table_cols, fill_color='darkgrey', height=30),
