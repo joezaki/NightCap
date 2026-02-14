@@ -212,8 +212,17 @@ else:
     print("✅ DepthGuide.stl generated successfully!")
 
 #%%
-## Generate and save plots ##
+## Generate and save channel mapping and plots ##
 #############################
+
+# save df of channel mapping
+if sort_table_by is not None:
+    holes_df = holes_df.sort_values(sort_table_by)
+
+# round to prevent tiny trailing decimal values
+holes_df.loc[:,['eML','eAP','eDV','rML','rAP','rDV']] = holes_df.loc[:,['eML','eAP','eDV','rML','rAP','rDV']].round(3)
+
+holes_df.to_csv(os.path.abspath(os.path.join(save_path, 'channel_map.csv')))
 
 # plot 2d mapping
 df_2d = holes_df.copy()
