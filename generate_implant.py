@@ -218,6 +218,8 @@ else:
 # save df of channel mapping
 if sort_table_by is not None:
     holes_df = holes_df.sort_values(sort_table_by)
+holes_df['rAP'] -= ap_offset # reset ap_offset for saving and plotting
+holes_df['eAP'] -= ap_offset # reset ap_offset for saving and plotting
 
 # round to prevent tiny trailing decimal values
 holes_df.loc[:,['eML','eAP','eDV','rML','rAP','rDV']] = holes_df.loc[:,['eML','eAP','eDV','rML','rAP','rDV']].round(3)
@@ -226,8 +228,6 @@ holes_df.to_csv(os.path.abspath(os.path.join(save_path, 'channel_map.csv')))
 
 # plot 2d mapping
 df_2d = holes_df.copy()
-df_2d['rAP'] -= ap_offset # reset ap_offset for plotting
-df_2d['eAP'] -= ap_offset # reset ap_offset for plotting
 
 if sort_table_by is not None:
     df_2d = df_2d.sort_values(sort_table_by)
@@ -241,8 +241,6 @@ plot_2d_mapping(
 
 # plot 3d mapping
 df_3d = holes_df.copy()
-df_3d['rAP'] -= ap_offset # reset ap_offset for plotting
-df_3d['eAP'] -= ap_offset # reset ap_offset for plotting
 plot_3d_mapping(
     df_3d,
     implant_boundary=implant_boundary,
