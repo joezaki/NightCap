@@ -9,3 +9,5 @@ dependencies:
   - pandas
   - pcbnew
   - plotly
+  - dask
+  - tqdm

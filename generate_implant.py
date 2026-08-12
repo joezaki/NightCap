@@ -42,6 +42,8 @@ implant_boundary[:,1] -= ap_offset
 
 sort_table_by = 'Region' # one of 'Region', 'Channel', or None
 
+generate_rotating_gif = True # creates a 3d plot of the implant that rotates
+
 #%%
 ## Load EIB coordinates ##
 ##########################
@@ -213,7 +215,7 @@ else:
 
 #%%
 ## Generate and save channel mapping and plots ##
-#############################
+#################################################
 
 # save df of channel mapping
 if sort_table_by is not None:
@@ -251,3 +253,62 @@ plot_3d_mapping(
     )
 
 print('{i} {t} Generation Complete.'.format(i=implant_name, t=current_time))
+
+#%%
+## Generate 3D rotating GIF of the implant
+##########################################
+
+if generate_rotating_gif:
+
+    import io
+    from PIL import Image
+    import plotly.graph_objects as go
+
+    import dask
+    from tqdm import tqdm
+    from dask.distributed import Client, LocalCluster
+
+    cluster = LocalCluster(
+        n_workers=16,
+        threads_per_worker=1,
+        memory_limit='8GB',
+        dashboard_address=':8787',
+        local_directory='./dask-worker-space'
+        )
+    client = Client(cluster)
+
+    def frame_2_img(fig_bytes, scale=2, format='png'):
+        img = Image.open(io.BytesIO(fig_bytes))
+        img.load()
+        return img.convert('RGB')
+
+    def get_updated_frame(fig, camera):
+        fig_new = go.Figure(fig.to_dict())
+        fig_new.update_layout(scene_camera=camera)
+
+        fig_bytes = fig_new.to_image(scale=2, format='png')
+        return frame_2_img(fig_bytes)
+
+    # specify a list of angles of the implant to include in the gif
+    angles = range(-180, 180, 3)
+
+    delayed_frames = []
+    cameras_ls = [{'center': {'x': 0, 'y': 0, 'z': 0},
+                'eye': {'x': 2.5 * np.cos(np.radians(angle)),
+                        'y': 2.5 * np.sin(np.radians(angle)),
+                        'z': 1}} for angle in tqdm(angles)]
+    delayed_frames = [dask.delayed(get_updated_frame)(fig, camera) for camera in cameras_ls]
+
+    # compute; THIS LINE TAKES ~4min for 360 frames
+    frames = dask.compute(*delayed_frames)
+
+    # save the list of images as a GIF; this takes another ~1.5min for 360 frames
+    if frames:
+        frames[0].save(
+            os.path.join(save_path, '3d_implant_animation.gif'),
+            save_all=True,
+            append_images=frames[1:],
+            duration=100, # ms per frame
+            loop=0
+        )
+        print("GIF saved successfully.")
