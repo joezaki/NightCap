@@ -2,9 +2,11 @@ import os
 import math
 import numpy as np
 import pandas as pd
+import shutil
 
 import io
 from PIL import Image
+import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -105,6 +107,8 @@ def plot_2d_implant(
     fig.update_layout(template='simple_white', width=1600, height=800, showlegend=False,
                     xaxis_title='ML', yaxis_title='AP', font=dict(size=15),
                     title_text=title)
+    fig.update_yaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
+    fig.update_xaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
 
     # optionally save
     if save_path is not None:
@@ -206,15 +210,72 @@ def plot_3d_implant(
     if return_fig:
         return fig
 
+def figs_to_gif(
+        figs,
+        save_path,
+        temp_save_path='./temp_gif_frames',
+        format='png',
+        scale=2,
+        height=800,
+        width=800,
+        duration=100,
+        loop=0
+        ):
+    '''
+    For a given list of frame images, create and save a gif looping through them.
 
-def frame_2_img(fig_bytes, scale=2, format='png'):
-    img = Image.open(io.BytesIO(fig_bytes))
-    img.load()
-    return img.convert('RGB')
+    Parameters
+    ==========
+    figs : list
+        list of plotly figures to stitch together.
+    save_path : str
+        directory including file name and extension to which to save final gif.
+    temp_save_path : str
+        directory where frames will temporarily be stored. Default is './temp_gif_frames'.
+    format : str
+        format to save frames in. One of ['png', 'jpg', 'jpeg', 'webp', 'svg', 'pdf']. Default is 'png'.
+    scale : int or float
+        scaling factor to up- or down-scale saved images. Default is 2.
+    height, width : int
+        height and width that each frame will be saved at, respectively. Defaults are 800.
+    duration : int
+        duration of each frame in ms. Default is 100.
+    loop : int
+        number of times to loop through the frames, infinite if 0. Default is 0.
+    '''
 
-def get_updated_frame(fig, camera):
-    fig_new = go.Figure(fig.to_dict())
-    fig_new.update_layout(scene_camera=camera)
+    # make temporary save path for frames, create filenames
+    temp_save_path = os.path.abspath(temp_save_path)
+    if not os.path.exists(temp_save_path):
+        os.makedirs(temp_save_path)
+    filenames = [os.path.join(temp_save_path, f'frame{i}.{format}') \
+                 for i in range(len(figs))]
+    
+    # temporarily save frames (most time intensive step)
+    print('saving temporary frame files.')
+    plotly.io.write_images(
+        fig=figs,
+        file=filenames,
+        scale=scale,
+        height=height,
+        width=width
+        )
+    print('temporary frame files saved.')
 
-    fig_bytes = fig_new.to_image(scale=2, format='png')
-    return frame_2_img(fig_bytes)
+    # load saved frames
+    frames = [Image.open(file) for file in filenames]
+
+    # write gif
+    if frames:
+        frames[0].save(
+            save_path,
+            save_all=True,
+            append_images=frames[1:],
+            duration=duration, # ms per frame
+            loop=loop
+        )
+        print("GIF saved successfully.")
+    
+    # delete saved frames
+    shutil.rmtree(temp_save_path)
+    print('temporary frame files deleted.')
