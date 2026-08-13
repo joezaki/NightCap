@@ -6,8 +6,8 @@ channels:
 dependencies:
   - python=3.13
   - numpy
+  - numpy-stl
   - pandas
-  - pcbnew
   - plotly
   - dask
   - tqdm
