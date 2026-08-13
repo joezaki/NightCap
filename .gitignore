@@ -3,4 +3,4 @@ __pycache__
 GeneratedFiles
 .DS_Store
 .vscode
-/dask-worker-space
+dask-worker-space
