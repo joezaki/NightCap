@@ -2,85 +2,54 @@ import os
 import math
 import numpy as np
 import pandas as pd
-import cvxpy as cp
 
+import io
+from PIL import Image
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-def vec_sub(a, b):
-    return [a[i] - b[i] for i in range(3)]
-
-
-def distance(p1, p2):
-    return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
-
-
-def find_nearest_matches(
-        eib,
-        regions,
-        verbose=False):
-    '''
-    Find nearest match between all EIB channels and brain regions.
-    Note that there len(eib) >= len(regions) or else this will error.
+def scad_tunnel(
+        implant_height,
+        coord,
+        radius,
+        extension=2,
+        bottom_z=0.0
+        ):
+    """
+    Creates a single vertical cylindrical hole centered on the
+    stereotax coordinate.
 
     Parameters
-    ==========
-    eib : pandas df
-        a pandas df representing the eib channels and their associated 'ML', 'AP', and 'DV' coordinates.
-    regions : pandas df
-        a pandas df representing the brain regions and their associated 'ML', 'AP', and 'DV' coordinates.
-    verbose : boolean
-        whether or not to print the matches
-    '''
+    ----------
+    implant_height : float
+        height of the implant
+    coord : [ML, AP, DV]
+        stereotax coordinate
+    radius : float
+        hole radius
+    extension : float
+        extends the hole above the implant surface
+    bottom_z : float
+        bottom of the hole (typically 0 = bottom of implant)
+    """
 
-    assert len(eib) >= len(regions), 'There must be at least as many EIB channels as there are brain regions.'
-    len_eib, len_regions = eib.shape[0], regions.shape[0]
+    top_z = implant_height + extension
+    height = top_z - bottom_z
 
-    # create cost matrix
-    # C[i, j] is the squared Euclidean distance between point A_i and point B_j
-    cost_matrix = cp.pnorm(cp.reshape(eib[['ML','AP']], (len_eib, 1, 2), 'C') - cp.reshape(regions[['ML','AP']], (1, len_regions, 2), 'C'), p=2, axis=2)**2
-    cost_matrix_val = cost_matrix.value  # Precompute the cost matrix
-
-    # define the CVXPY problem variables
-    P = cp.Variable((len_eib, len_regions), nonneg=True)
-
-    # define the objective function
-    objective = cp.Minimize(cp.sum(cp.multiply(cost_matrix_val, P)))
-
-    # define the constraints
-    # Each point in EIB may not be matched
-    row_constraints = [cp.sum(P, axis=1) <= 1]
-    # Each point in brain regions must be matched
-    col_constraints = [cp.sum(P, axis=0) == 1]
-    constraints = row_constraints + col_constraints
-
-    # solve
-    problem = cp.Problem(objective, constraints)
-    problem.solve()
-    matches = np.where(np.round(P.value) == 1)
-
-    if verbose:
-        print("\nMatches (A_i -> B_j):")
-        for i, j in zip(matches[0], matches[1]):
-            print(f"Point A_{i} matched to Point B_{j}")
-
-    # the coords prefix 'e' is for EIB and 'r' for Region (i.e., brain region)
-    matches_df = pd.DataFrame({'Channel':eib.iloc[matches[0]]['Channel'].values,
-                               'IntanChannel':eib.iloc[matches[0]]['IntanChannel'].values,
-                               'Region' :regions.iloc[matches[1]]['Region'].values,
-                               'eML':    eib.iloc[matches[0]]['ML'].values,
-                               'eAP':    eib.iloc[matches[0]]['AP'].values,
-                               'eDV':    eib.iloc[matches[0]]['DV'].values,
-                               'rML':regions.iloc[matches[1]]['ML'].values,
-                               'rAP':regions.iloc[matches[1]]['AP'].values,
-                               'rDV':regions.iloc[matches[1]]['DV'].values}
-                               ).reset_index(drop=True)
-    
-    return matches_df
+    return f"""
+translate([{coord[0]:.4f},
+           {coord[1]:.4f},
+           {bottom_z:.4f}])
+cylinder(
+    h={height:.4f},
+    r={radius:.4f},
+    $fn=60
+);
+"""
 
 
-def plot_2d_mapping(
-    holes_df,
+def plot_2d_implant(
+    regions_df,
     marker_size=18,
     title=None,
     save_path=None,
@@ -96,8 +65,8 @@ def plot_2d_mapping(
 
     Parameters
     ==========
-    holes_df : pandas df
-        df representing the matched eib channels and brain regions, with their associated coordinates
+    regions_df : pandas df
+        df representing the brain region stereotaxic coordinates
     marker_size : int
         size of the datapoints representing the eib channels and the brain region coordinates. default is 18.
     title : str
@@ -110,35 +79,22 @@ def plot_2d_mapping(
         whether or not to return the fig object. Default is False.
     '''
 
-    df = holes_df.copy()
+    df = regions_df.copy()
 
     fig = make_subplots(cols=2, specs = [[{"type": "xy"}, {"type": "table"}]])
 
-    # plot eib channels
-    fig.add_trace(go.Scattergl(x=df['eML'], y=df['eAP'], mode='markers+text', text=df['Channel'],
-                               textposition='top center', name='EIB',
-                               hovertext=['{ch}; {r}'.format(ch=row['Channel'],r=row['Region']) for _,row in df.iterrows()],
-                               marker=dict(color='gold', size=marker_size, line=dict(color='black', width=1))), row=1, col=1)
-
     # plot brain regions
-    fig.add_trace(go.Scattergl(x=df['rML'], y=df['rAP'], mode='markers+text', text=df['Region'],
+    fig.add_trace(go.Scattergl(x=df['ML'], y=df['AP'], mode='markers+text', text=df['Region'],
                                textposition='top center', name='Brain',
-                               hovertext=['ML:{ml}<br>AP:{ap}<br>DV:{dv}<br>{r}; {ch}'.format(
-                                   ml=np.round(row['rML'],3),
-                                   ap=np.round(row['rAP'],3),
-                                   dv=np.round(row['rDV'],3),
-                                   r=row['Region'],
-                                   ch=row['Channel']) for _,row in df.iterrows()],
-                               marker=dict(color='white', size=marker_size, line=dict(color='black', width=1))), row=1, col=1)
-
-    # plot mapping between EIB channels and brain regions
-    for _, match in df.iterrows():
-        fig.add_trace(go.Scattergl(x=match[['eML','rML']], y=match[['eAP','rAP']],
-                                mode='lines', line=dict(color='slategrey', width=2)), row=1, col=1)
+                               hovertext=['ML:{ml}<br>AP:{ap}<br>DV:{dv}<br>{r}'.format(
+                                   ml=np.round(row['ML'],3),
+                                   ap=np.round(row['AP'],3),
+                                   dv=np.round(row['DV'],3),
+                                   r=row['Region']) for _,row in df.iterrows()],
+                               marker=dict(color='teal', size=marker_size, line=dict(color='black', width=1))), row=1, col=1)
 
     # plot table with mapping and brain region coordinates
-    df.rename(columns={'rML':'ML','rAP':'AP', 'rDV':'DV'}, inplace=True)
-    table_cols = ['Channel','IntanChannel','Region','ML','AP','DV']
+    table_cols = ['Region','ML','AP','DV']
     df[['ML','AP','DV']] = df[['ML','AP','DV']].round(3)
     table_formats = np.repeat('str', len(table_cols))
     fig.add_trace(go.Table(header=dict(values=table_cols, fill_color='darkgrey', height=30),
@@ -153,7 +109,7 @@ def plot_2d_mapping(
     # optionally save
     if save_path is not None:
         save_path = os.path.abspath(save_path)
-        output_file = os.path.join(save_path, "2d_implant_mapping_{t}.html".format(t=current_time))
+        output_file = os.path.join(save_path, f"2d_implant_{current_time}.html")
         if not os.path.exists(save_path):
             print('Making directory at: {}'.format(save_path))
             os.makedirs(save_path)
@@ -165,11 +121,10 @@ def plot_2d_mapping(
         return fig
 
 
-def plot_3d_mapping(
-    holes_df,
-    implant_boundary,
+def plot_3d_implant(
+    regions_df,
+    implant_mesh,
     implant_height,
-    eib_offset=2,
     title=None,
     save_path=None,
     current_time=None,
@@ -183,14 +138,12 @@ def plot_3d_mapping(
 
     Parameters
     ==========
-    holes_df : pandas df
-        df representing the matched eib channels and brain regions, with their associated coordinates
-    implant_boundary : numpy array
-        a 2d numpy array representing the vertices of the implant, for drawing the mesh
+    regions_df : pandas df
+        df representing the brain region stereotaxic coordinates
+    implant_mesh : numpy array
+        a numpy array representing the vertices of the implant, for drawing the mesh
     implant_height : float
         the height of the implant in millimeters, for drawing.
-    eib_offset : int or float
-        the vertical distance between the surface of the implant and the eib. default is 2.
     title : str
         optional title for the entire plot. default is None.
     save_path : str
@@ -201,58 +154,37 @@ def plot_3d_mapping(
         whether or not to return the fig object. Default is False.
     '''
 
-    # construct mesh coordinates for implant
-    implant_mesh = np.concatenate((implant_boundary,
-                                   np.repeat(implant_height,
-                                             implant_boundary.shape[0]).reshape((implant_boundary.shape[0],1))),
-                                             axis=1)
-    implant_height_mesh = np.repeat(0, implant_boundary.shape[0]).reshape((implant_boundary.shape[0],1))
-    implant_mesh = np.append(implant_mesh,
-                             np.concatenate((implant_boundary, implant_height_mesh), axis=1), axis=0)
-
+    df = regions_df.copy()
     fig = go.Figure()
 
     # plot mesh for implant outline
     fig.add_trace(go.Mesh3d(x=implant_mesh[:,0], y=implant_mesh[:,1], z=implant_mesh[:,2],
-                            color='grey', opacity=0.5, alphahull=0.1, name='Implant',
-                            hoverinfo='none', showlegend=True))
-
-    # show mesh for eib (using the boundaries around the eib channels)
-    fig.add_trace(go.Mesh3d(x=holes_df['eML'], y=holes_df['eAP'], z=holes_df['eDV']+eib_offset,
-                            color='gold', opacity=0.5, name='EIB',
+                            color='lightgrey', opacity=0.5, alphahull=0.1, name='Implant',
                             hoverinfo='none', showlegend=True))
 
     # plot holes for implant
-    fig.add_trace(go.Scatter3d(x=holes_df['rML'], y=holes_df['rAP'], z=np.repeat(implant_height, holes_df.shape[0]),
-                               text=holes_df['Region'], mode='markers', marker=dict(color='white', size=10),
-                               hoverinfo='text', showlegend=False,
-                               hovertext=['{ch}<br>ML:{ml}<br>AP:{ap}<br>DV:{dv}'.format(
-                                   ch=row['Channel'],
-                                   ml=np.round(row['rML'],3),
-                                   ap=np.round(row['rAP'],3),
-                                   dv=np.round(row['rDV'],3)) for _,row in holes_df.iterrows()]))
+    fig.add_trace(go.Scatter3d(x=df['ML'], y=df['AP'], z=np.repeat(implant_height, df.shape[0]),
+                               text=df['Region'], mode='markers', marker=dict(color='teal', size=10),
+                               hoverinfo='text', showlegend=True, name='Regions',
+                               hovertext=['Region {r}<br>ML: {ml}<br>AP: {ap}<br>DV: {dv}'.format(
+                                   r=row['Region'],
+                                   ml=np.round(row['ML'],3),
+                                   ap=np.round(row['AP'],3),
+                                   dv=np.round(row['DV'],3)) for _,row in df.iterrows()]))
 
-    # plot eib channels
-    fig.add_trace(go.Scatter3d(x=holes_df['eML'], y=holes_df['eAP'],
-                               z=np.repeat(implant_height+eib_offset, holes_df.shape[0]),
-                               text=holes_df['Channel'], mode='markers+text',
-                               marker=dict(color='gold', size=10), showlegend=False))
-
-    # plot mapping between EIB channels and brain regions
-    for _, match in holes_df.iterrows():
-        fig.add_trace(go.Scatter3d(x=match[['eML','rML']], y=match[['eAP','rAP']], z=[implant_height+eib_offset,implant_height],
-                                   hovertext='{ch} -> {r}'.format(ch=match['Channel'],r=match['Region']),
-                                   hoverinfo='text', mode='lines', line=dict(color='slategrey', width=5), showlegend=False))
-        fig.add_trace(go.Scatter3d(x=np.repeat(match['rML'],2), y=np.repeat(match['rAP'],2), z=[implant_height,match['rDV']],
-                                   mode='lines', line=dict(color='purple', width=4),
-                                   name='{e}; {r}'.format(e=match['Channel'], r=match['Region']),
-                                   hovertext='{r}<br>ML:{ml}<br>AP:{ap}<br>DV:{dv}'.format(
-                                       r=match['Region'],
-                                       ml=np.round(match['rML'],3),
-                                       ap=np.round(match['rAP'],3),
-                                       dv=np.round(match['rDV'],3)),
+    # plot depth of each wire for each brain region
+    for i, region in df.iterrows():
+        showlegend= True if i == 0 else False
+        fig.add_trace(go.Scatter3d(x=np.repeat(region['ML'],2), y=np.repeat(region['AP'],2), z=[implant_height,region['DV']],
+                                   mode='lines', line=dict(color='purple', width=4), name='Electrode Wires',
+                                   hovertext='Region: {r}<br>ML: {ml}<br>AP: {ap}<br>DV: {dv}'.format(
+                                       r=region['Region'],
+                                       ml=np.round(region['ML'],3),
+                                       ap=np.round(region['AP'],3),
+                                       dv=np.round(region['DV'],3)),
                                        hoverinfo='text',
-                                       showlegend=False))
+                                       showlegend=showlegend,
+                                       legendgroup='wires'))
 
     # configure plot
     fig.update_layout(template='simple_white', width=800, height=800, font=dict(size=15), showlegend=True,
@@ -263,7 +195,7 @@ def plot_3d_mapping(
     # optionally save
     if save_path is not None:
         save_path = os.path.abspath(save_path)
-        output_file = os.path.join(save_path, "3d_implant_mapping{t}.html".format(t='_'+current_time))
+        output_file = os.path.join(save_path, f"3d_implant_{current_time}.html")
         if not os.path.exists(save_path):
             print('Making directory at: {}'.format(save_path))
             os.makedirs(save_path)
@@ -273,3 +205,16 @@ def plot_3d_mapping(
 
     if return_fig:
         return fig
+
+
+def frame_2_img(fig_bytes, scale=2, format='png'):
+    img = Image.open(io.BytesIO(fig_bytes))
+    img.load()
+    return img.convert('RGB')
+
+def get_updated_frame(fig, camera):
+    fig_new = go.Figure(fig.to_dict())
+    fig_new.update_layout(scene_camera=camera)
+
+    fig_bytes = fig_new.to_image(scale=2, format='png')
+    return frame_2_img(fig_bytes)
