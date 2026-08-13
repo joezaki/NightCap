@@ -8,6 +8,7 @@ dependencies:
   - numpy
   - numpy-stl
   - pandas
-  - plotly
+  - plotly>=6.3.0
+  - python-kaleido>=1.1.0
   - dask
   - tqdm
