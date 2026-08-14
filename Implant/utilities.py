@@ -55,7 +55,6 @@ def plot_2d_implant(
     marker_size=18,
     title=None,
     save_path=None,
-    current_time=None,
     return_fig=False
 ):
     '''
@@ -75,8 +74,6 @@ def plot_2d_implant(
         optional title for the entire plot. default is None.
     save_path : str
         path to the directory where the plot will be saved. Default is None.
-    current_time : str
-        a datetime-based string to attach to the file name when created.
     return_fig : bool
         whether or not to return the fig object. Default is False.
     '''
@@ -113,7 +110,7 @@ def plot_2d_implant(
     # optionally save
     if save_path is not None:
         save_path = os.path.abspath(save_path)
-        output_file = os.path.join(save_path, f"2d_implant_{current_time}.html")
+        output_file = os.path.join(save_path, f"2d_implant.html")
         if not os.path.exists(save_path):
             print('Making directory at: {}'.format(save_path))
             os.makedirs(save_path)
@@ -131,7 +128,6 @@ def plot_3d_implant(
     implant_height,
     title=None,
     save_path=None,
-    current_time=None,
     return_fig=False
 ):
     '''
@@ -152,8 +148,6 @@ def plot_3d_implant(
         optional title for the entire plot. default is None.
     save_path : str
         path to the directory where the plot will be saved. Default is None.
-    current_time : str
-        a datetime-based string to attach to the file name when created.
     return_fig : bool
         whether or not to return the fig object. Default is False.
     '''
@@ -199,7 +193,7 @@ def plot_3d_implant(
     # optionally save
     if save_path is not None:
         save_path = os.path.abspath(save_path)
-        output_file = os.path.join(save_path, f"3d_implant_{current_time}.html")
+        output_file = os.path.join(save_path, f"3d_implant.html")
         if not os.path.exists(save_path):
             print('Making directory at: {}'.format(save_path))
             os.makedirs(save_path)
