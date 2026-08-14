@@ -26,11 +26,11 @@ if __name__ == '__main__':
         os.makedirs(save_path)
 
     #%%
-    ############################################
-    ## Specify parameters for file generation ##
-    ############################################
+    ########################
+    ## Specify parameters ##
+    ########################
 
-    regions_file = 'CTX_TH_HPC_Bilateral_16Ch' # file name where stereotaxic coords are stored
+    brain_regions_csv = 'CTX_TH_HPC_Bilateral_16Ch' # file name where stereotaxic coords are stored
 
     hole_radius = 0.23 # radius of each hole in implant
     implant_height = 4.75 # in mm, one of [3, 4, 4.75]
@@ -54,6 +54,7 @@ if __name__ == '__main__':
         openscad_path = 'usr/bin/openscad'
 
     # brain region coordinates are specified as (ML, AP, DV)
+    regions_file = brain_regions_csv.split('.')[0]
     regions_df = pd.read_csv('../StereotaxCoords/{}.csv'.format(regions_file))
 
     implant_stl = f'ImplantBlank_H{implant_height}mm'.replace('.', '_')
@@ -169,8 +170,7 @@ if __name__ == '__main__':
     plot_2d_implant(
         regions_df,
         title=regions_file,
-        save_path=save_path,
-        current_time=current_time
+        save_path=save_path
         )
 
     # plot 3d mapping
@@ -185,7 +185,6 @@ if __name__ == '__main__':
         implant_height=implant_height,
         title=regions_file,
         save_path=save_path,
-        current_time=current_time,
         return_fig=True
         )
 
