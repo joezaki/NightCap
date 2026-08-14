@@ -4,3 +4,4 @@ GeneratedFiles
 .DS_Store
 .vscode
 dask-worker-space
+*.kicad_prl
