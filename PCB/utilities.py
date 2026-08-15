@@ -601,11 +601,9 @@ def generate_jlcpcb_files(
     popt.SetUseAuxOrigin(False) 
     popt.SetSubtractMaskFromSilk(True) # Clears silkscreen off your copper pads
     
-    # define all the layers JLCPCB needs for a 4-layer board
+    # define all the layers JLCPCB needs except inner layers
     layers = [
         ("F_Cu", pcbnew.F_Cu, "Top Copper"),
-        ("In1_Cu", pcbnew.In1_Cu, "Inner 1 Copper"),
-        ("In2_Cu", pcbnew.In2_Cu, "Inner 2 Copper"),
         ("B_Cu", pcbnew.B_Cu, "Bottom Copper"),
         ("F_SilkS", pcbnew.F_SilkS, "Top Silkscreen"),
         ("B_SilkS", pcbnew.B_SilkS, "Bottom Silkscreen"),
@@ -613,6 +611,20 @@ def generate_jlcpcb_files(
         ("B_Mask", pcbnew.B_Mask, "Bottom Solder Mask"),
         ("Edge_Cuts", pcbnew.Edge_Cuts, "Board Outline")
     ]
+
+    # check if board used inner layers during autorouting. if so, add inner layers
+    has_inner_tracks = any(
+        track.GetLayer() in [pcbnew.In1_Cu, pcbnew.In2_Cu] for track in board.GetTracks() \
+        if track.GetClass() in ['PCB_TRACK', 'PCB_ARC', 'TRACK', 'ARC'])
+    has_inner_zones = any(zone.GetLayer() in [pcbnew.In1_Cu, pcbnew.In2_Cu] for zone in board.Zones())
+    has_inner_copper = has_inner_tracks or has_inner_zones
+    print(has_inner_copper)
+    board.SetCopperLayerCount(4 if has_inner_copper else 2)
+    if has_inner_copper:
+        layers.extend([
+            ("In1_Cu", pcbnew.In1_Cu, "Inner 1 Copper"),
+            ("In2_Cu", pcbnew.In2_Cu, "Inner 2 Copper"),
+        ])
     
     # generate a .gbr file for each layer
     for name, layer_id, desc in layers:
