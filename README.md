@@ -30,11 +30,9 @@
 > > - `2d_implant.html` & `3d_implant.html` (interactive visualizations of the implant)
 > > - `3d_implant_animation.gif` (GIF of the 3D rotating implant for presentations)<br>
 
-<div align="center">
-    <img src="./images/implant/2d_implant.svg" alt="2d_implant" height="300" />
-    <img src="./images/implant/3d_implant.svg" alt="3d_implant" height="300" /><br>
-    <img src="./images/implant/3d_implant_animation.gif" alt="3d_implant_animation" width="400" />
-</div>
+<img src="./images/implant/2d_implant.svg" alt="2d_implant" width="800" /><br>
+<img src="./images/implant/3d_implant.svg" alt="3d_implant" width="800" /><br>
+<img src="./images/implant/3d_implant_animation.gif" alt="3d_implant_animation" width="800" />
 
 ***
 
@@ -48,6 +46,7 @@
 > > - Click "Apply Pending Changes"
 > > - [Install Java here.](https://adoptium.net/temurin/releases)
 > > - After installation, restart KiCad.
+
 ***
 
 ### *Bottom PCB*
@@ -63,10 +62,8 @@
 > > - `autoroute.ses` (file with autorouting track data)
 > > - `figures/` (folder with visualizations of PCB)<br>
 
-<div align="center">
-    <img src="./images/bottom_pcb/BottomPCB-top_view.svg" alt="bottom_pcb_top_view" height="300" />
-    <img src="./images/bottom_pcb/BottomPCB-bottom_view.svg" alt="bottom_pcb_bottom_view" height="300" />
-</div>
+<img src="./images/bottom_pcb/BottomPCB-top_view.svg" alt="bottom_pcb_top_view" width="400" />
+<img src="./images/bottom_pcb/BottomPCB-bottom_view.svg" alt="bottom_pcb_bottom_view" width="400" />
 
 ***
 
@@ -84,15 +81,12 @@
 > > - `autoroute.ses` (file with autorouting track data)
 > > - `figures/` (folder with visualizations of PCB)<br>
 
-<div align="center">
-    <img src="./images/top_pcb/TopPCB-top_view.svg" alt="top_pcb_top_view" height="300" />
-    <img src="./images/top_pcb/TopPCB-bottom_view.svg" alt="top_pcb_bottom_view" height="300" />
-</div>
+<img src="./images/top_pcb/TopPCB-top_view.svg" alt="top_pcb_top_view" width="400" />
+<img src="./images/top_pcb/TopPCB-bottom_view.svg" alt="top_pcb_bottom_view" width="400" />
 
 ***
 
-
-### Assembly
+### *Assembly*
 > 0. Once implant, depth guide, top PCB, and bottom PCB have been created, the whole implant needs to be assembled.
 > 1. First, take wire of your choosing (we have been using [Stablohm 650 wire](https://calfinewire.com/item/alloys/all-alloys/100187-stablohm-650-wire) for LFP wires and [PFA-Coated Silver Wire 786000](https://www.a-msystems.com/p-796-pfa-coated-silver-wire.aspx) for EEG and EMG wires).
 > 1. Cut each wire to ~20mm long using sharp scissors, and strip 1mm of insulation off one end of each wire. This side will connect to the bottom PCB.
