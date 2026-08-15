@@ -93,7 +93,7 @@ def plot_2d_implant(
                                marker=dict(color='teal', size=marker_size, line=dict(color='black', width=1))), row=1, col=1)
 
     # plot table with mapping and brain region coordinates
-    table_cols = ['Region','ML','AP','DV']
+    table_cols = ['Region','ML','AP','DV','Type']
     df[['ML','AP','DV']] = df[['ML','AP','DV']].round(3)
     table_formats = np.repeat('str', len(table_cols))
     fig.add_trace(go.Table(header=dict(values=table_cols, fill_color='darkgrey', height=30),
@@ -106,6 +106,7 @@ def plot_2d_implant(
                     title_text=title)
     fig.update_yaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
     fig.update_xaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
+    config = {'toImageButtonOptions': {'format': 'svg'}}
 
     # optionally save
     if save_path is not None:
@@ -114,9 +115,9 @@ def plot_2d_implant(
         if not os.path.exists(save_path):
             print('Making directory at: {}'.format(save_path))
             os.makedirs(save_path)
-        fig.write_html(output_file)
+        fig.write_html(output_file, config=config)
     else:
-        fig.show()
+        fig.show(config=config)
 
     if return_fig:
         return fig
@@ -189,6 +190,7 @@ def plot_3d_implant(
                       title_text=title, margin=dict(t=80, r=0, l=0, b=0),
                       scene=dict(xaxis_title='ML', yaxis_title='AP', zaxis_title='DV'),
                       scene_camera=dict(center=dict(z=-.15), eye=dict(x=-.8, y=-2, z=0.7)))
+    config = {'toImageButtonOptions': {'format': 'svg'}}
 
     # optionally save
     if save_path is not None:
@@ -197,9 +199,9 @@ def plot_3d_implant(
         if not os.path.exists(save_path):
             print('Making directory at: {}'.format(save_path))
             os.makedirs(save_path)
-        fig.write_html(output_file)
+        fig.write_html(output_file, config=config)
     else:
-        fig.show()
+        fig.show(config=config)
 
     if return_fig:
         return fig
@@ -247,6 +249,7 @@ def figs_to_gif(
     
     # temporarily save frames (most time intensive step)
     print('saving temporary frame files.')
+    print(f'keep track of progress in {temp_save_path}')
     plotly.io.write_images(
         fig=figs,
         file=filenames,
