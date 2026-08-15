@@ -13,7 +13,8 @@
 > 1. Save this file in the `StereotaxCoords` folder.
 > 1. Proceed to `Implant` instructions below to construct the 3D-printable implant.
 > 1. Proceed to `PCB`, `Bottom PCB`, and `Top PCB` instructions to construct the bottom and top PCBs.
-> 1. Proceed to `Assembly` to put everything together.
+> 1. Proceed to `Assembly` to put everything together.<br>
+> *Note: Images below are examples from running the pipeline on the CSV provided in the repo: `/StereotaxCoords/CTX_TH_HPC_Bilateral_16Ch.csv`*
 
 ***
 
