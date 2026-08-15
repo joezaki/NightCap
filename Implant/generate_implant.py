@@ -39,6 +39,7 @@ if __name__ == '__main__':
     depth_inner_radius = hole_radius + 0.05
 
     generate_rotating_gif = True # whether or not to save a gif of the rotating 3d implant
+    rotating_gif_step_size = 10 # step size in degrees for each frame in rotating gif
 
     #%%
     ###################################################################################
@@ -207,8 +208,7 @@ if __name__ == '__main__':
         client = Client(cluster)
 
         # specify a list of angles of the implant to include in the gif
-        step = 10
-        angles = range(-180, 180+step, step)
+        angles = range(-180, 180+rotating_gif_step_size, rotating_gif_step_size)
 
         frames = []
         for i, angle in enumerate(tqdm(angles)):
