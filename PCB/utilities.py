@@ -618,7 +618,6 @@ def generate_jlcpcb_files(
         if track.GetClass() in ['PCB_TRACK', 'PCB_ARC', 'TRACK', 'ARC'])
     has_inner_zones = any(zone.GetLayer() in [pcbnew.In1_Cu, pcbnew.In2_Cu] for zone in board.Zones())
     has_inner_copper = has_inner_tracks or has_inner_zones
-    print(has_inner_copper)
     board.SetCopperLayerCount(4 if has_inner_copper else 2)
     if has_inner_copper:
         layers.extend([

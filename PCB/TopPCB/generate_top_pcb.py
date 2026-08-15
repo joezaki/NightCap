@@ -36,7 +36,7 @@ default_netclass = net_settings.GetDefaultNetclass()
 default_netclass.SetClearance(pcbnew.FromMM(0.10))
 default_netclass.SetTrackWidth(pcbnew.FromMM(0.15))
 
-close_editor = False # whether or not to close the PCB editor automatically at the end
+close_editor = True # whether or not to close the PCB editor automatically at the end
 
 #%%
 #################################
