@@ -83,9 +83,23 @@ def plot_2d_implant(
 
     df = regions_df.copy()
 
-    fig = make_subplots(cols=2, specs = [[{"type": "xy"}, {"type": "table"}]])
+    fig = make_subplots(
+        cols=2, horizontal_spacing=0.05,
+        column_widths=[1,1],
+        specs = [[{"type": "xy"}, {"type": "table"}]]
+        )
 
     # plot brain regions
+    fig.add_trace(go.Scattergl(
+        x=df['ML'], y=df['AP'], mode='markers+text',
+        text=df['Region'], textfont=dict(size=12),
+        textposition='top center', name='Brain',
+        hovertext=['ML:{ml}<br>AP:{ap}<br>DV:{dv}<br>{r}'.format(
+            ml=np.round(row['ML'],3),
+            ap=np.round(row['AP'],3),
+            dv=np.round(row['DV'],3),
+            r=row['Region']) for _,row in df.iterrows()],
+        marker=dict(color='#ffffff', size=marker_size, line=dict(color='#c83434', width=3))), row=1, col=1)
 
     # draw bone suture lines
     fig.add_vline(x=0, line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1) # midline
@@ -96,16 +110,28 @@ def plot_2d_implant(
     table_cols = ['Region','ML','AP','DV','Type']
     df[['ML','AP','DV']] = df[['ML','AP','DV']].round(3)
     table_formats = np.repeat('str', len(table_cols))
-    fig.add_trace(go.Table(header=dict(values=table_cols, fill_color='darkgrey', height=30),
-                        cells=dict(values=df[table_cols].T.values.tolist(), height=30,
-                        format=table_formats)), row=1, col=2)
+    fig.add_trace(go.Table(
+        header=dict(values=table_cols, fill_color='darkgrey', height=30),
+        cells=dict(values=df[table_cols].T.values.tolist(), height=30, format=table_formats)
+        ), row=1, col=2)
 
     # configure plot
-    fig.update_layout(template='simple_white', width=1600, height=800, showlegend=False,
-                    xaxis_title='ML', yaxis_title='AP', font=dict(size=15),
-                    title_text=title)
+    fig.update_layout(
+        template='simple_white', width=1200, height=720, showlegend=False,
+        xaxis_title='ML', yaxis_title='AP', font=dict(size=15, color='#ffffff'),
+        paper_bgcolor='#2b2b2b', plot_bgcolor='#2b2b2b', title_text=title,
+        xaxis=dict(linecolor='#ffffff'),
+        yaxis=dict(linecolor='#ffffff')
+        )
     fig.update_yaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
     fig.update_xaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
+
+    fig.update_traces(
+        selector=dict(type='table'),
+        header=dict(fill_color="#1e1e1e", font=dict(color="white"), line_color="#444444"),
+        cells=dict(fill_color="#2b2b2b", font=dict(color="white"), line_color="#444444")
+        )
+
     config = {'toImageButtonOptions': {'format': 'svg'}}
 
     # optionally save
@@ -157,39 +183,53 @@ def plot_3d_implant(
     fig = go.Figure()
 
     # plot mesh for implant outline
-    fig.add_trace(go.Mesh3d(x=implant_mesh[:,0], y=implant_mesh[:,1], z=implant_mesh[:,2],
-                            color='lightgrey', opacity=0.5, alphahull=0.1, name='Implant',
-                            hoverinfo='none', showlegend=True))
+    fig.add_trace(go.Mesh3d(
+        x=implant_mesh[:,0], y=implant_mesh[:,1], z=implant_mesh[:,2],
+        color='#ffffff', opacity=0.5, alphahull=0.1, name='Implant',
+        hoverinfo='none', showlegend=True
+        ))
 
     # plot holes for implant
-    fig.add_trace(go.Scatter3d(x=df['ML'], y=df['AP'], z=np.repeat(implant_height, df.shape[0]),
-                               text=df['Region'], mode='markers', marker=dict(color='teal', size=10),
-                               hoverinfo='text', showlegend=True, name='Regions',
-                               hovertext=['Region {r}<br>ML: {ml}<br>AP: {ap}<br>DV: {dv}'.format(
-                                   r=row['Region'],
-                                   ml=np.round(row['ML'],3),
-                                   ap=np.round(row['AP'],3),
-                                   dv=np.round(row['DV'],3)) for _,row in df.iterrows()]))
+    fig.add_trace(go.Scatter3d(
+        x=df['ML'], y=df['AP'], z=np.repeat(implant_height, df.shape[0]),
+        text=df['Region'], mode='markers', marker=dict(color='#c83434', size=10),
+        hoverinfo='text', showlegend=True, name='Regions',
+        hovertext=['Region {r}<br>ML: {ml}<br>AP: {ap}<br>DV: {dv}'.format(
+            r=row['Region'],
+            ml=np.round(row['ML'],3),
+            ap=np.round(row['AP'],3),
+            dv=np.round(row['DV'],3)) for _,row in df.iterrows()]
+            ))
 
     # plot depth of each wire for each brain region
     for i, region in df.iterrows():
         showlegend= True if i == 0 else False
-        fig.add_trace(go.Scatter3d(x=np.repeat(region['ML'],2), y=np.repeat(region['AP'],2), z=[implant_height,region['DV']],
-                                   mode='lines', line=dict(color='purple', width=4), name='Electrode Wires',
-                                   hovertext='Region: {r}<br>ML: {ml}<br>AP: {ap}<br>DV: {dv}'.format(
-                                       r=region['Region'],
-                                       ml=np.round(region['ML'],3),
-                                       ap=np.round(region['AP'],3),
-                                       dv=np.round(region['DV'],3)),
-                                       hoverinfo='text',
-                                       showlegend=showlegend,
-                                       legendgroup='wires'))
+        fig.add_trace(go.Scatter3d(
+            x=np.repeat(region['ML'],2), y=np.repeat(region['AP'],2), z=[implant_height,region['DV']],
+            mode='lines', line=dict(color='#2e4d78', width=4), name='Electrode Wires',
+            hovertext='Region: {r}<br>ML: {ml}<br>AP: {ap}<br>DV: {dv}'.format(
+                r=region['Region'],
+                ml=np.round(region['ML'],3),
+                ap=np.round(region['AP'],3),
+                dv=np.round(region['DV'],3)),
+            hoverinfo='text',
+            showlegend=showlegend,
+            legendgroup='wires'
+            ))
 
     # configure plot
-    fig.update_layout(template='simple_white', width=800, height=800, font=dict(size=15), showlegend=True,
-                      title_text=title, margin=dict(t=80, r=0, l=0, b=0),
-                      scene=dict(xaxis_title='ML', yaxis_title='AP', zaxis_title='DV'),
-                      scene_camera=dict(center=dict(z=-.15), eye=dict(x=-.8, y=-2, z=0.7)))
+    axis_specs_3d = dict(backgroundcolor="#2b2b2b", showbackground=True, gridcolor='#4a4a4a', linecolor='#ffffff')
+    fig.update_layout(
+        template='plotly_dark', width=800, height=800, font=dict(size=15, color='#ffffff'), showlegend=True,
+        legend=dict(orientation='h', yanchor='top', xanchor='center', x=0.5, y=0.9, bgcolor='#2b2b2b'),
+        title_text=title, margin=dict(t=80, r=0, l=0, b=0), paper_bgcolor='#2b2b2b',
+        scene_camera=dict(eye=dict(x=1, y=-2, z=1)),
+        scene=dict(
+            bgcolor="#2b2b2b",
+            xaxis=dict(**axis_specs_3d, title_text='ML'),
+            yaxis=dict(**axis_specs_3d, title_text='AP'),
+            zaxis=dict(**axis_specs_3d, title_text='DV')
+            ))
     config = {'toImageButtonOptions': {'format': 'svg'}}
 
     # optionally save
