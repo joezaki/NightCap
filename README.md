@@ -30,9 +30,11 @@
 > > - `2d_implant.html` & `3d_implant.html` (interactive visualizations of the implant)
 > > - `3d_implant_animation.gif` (GIF of the 3D rotating implant for presentations)<br>
 
-<img src="./images/implant/2d_implant.svg" alt="2d_implant" width="800" /><br>
-<img src="./images/implant/3d_implant.svg" alt="3d_implant" width="800" /><br>
-<img src="./images/implant/3d_implant_animation.gif" alt="3d_implant_animation" width="800" />
+<div align="center">
+    <img src="./images/implant/2d_implant.svg" alt="2d_implant" width="700" /><br>
+    <img src="./images/implant/3d_implant.svg" alt="3d_implant" width="700" /><br>
+    <img src="./images/implant/3d_implant_animation.gif" alt="3d_implant_animation" width="700" />
+</div>
 
 ***
 
@@ -62,8 +64,10 @@
 > > - `autoroute.ses` (file with autorouting track data)
 > > - `figures/` (folder with visualizations of PCB)<br>
 
-<img src="./images/bottom_pcb/BottomPCB-top_view.svg" alt="bottom_pcb_top_view" width="400" />
-<img src="./images/bottom_pcb/BottomPCB-bottom_view.svg" alt="bottom_pcb_bottom_view" width="400" />
+<div align="center">
+    <img src="./images/bottom_pcb/BottomPCB-top_view.svg" alt="bottom_pcb_top_view" width="350" />
+    <img src="./images/bottom_pcb/BottomPCB-bottom_view.svg" alt="bottom_pcb_bottom_view" width="350" />
+</div>
 
 ***
 
@@ -81,8 +85,10 @@
 > > - `autoroute.ses` (file with autorouting track data)
 > > - `figures/` (folder with visualizations of PCB)<br>
 
-<img src="./images/top_pcb/TopPCB-top_view.svg" alt="top_pcb_top_view" width="400" />
-<img src="./images/top_pcb/TopPCB-bottom_view.svg" alt="top_pcb_bottom_view" width="400" />
+<div align="center">
+    <img src="./images/top_pcb/TopPCB-top_view.svg" alt="top_pcb_top_view" width="350" />
+    <img src="./images/top_pcb/TopPCB-bottom_view.svg" alt="top_pcb_bottom_view" width="350" />
+</div>
 
 ***
 
