@@ -52,6 +52,7 @@ cylinder(
 
 def plot_2d_implant(
     regions_df,
+    lambda_ap=4.2,
     marker_size=18,
     title=None,
     save_path=None,
@@ -68,6 +69,8 @@ def plot_2d_implant(
     ==========
     regions_df : pandas df
         df representing the brain region stereotaxic coordinates
+    lambda_ap : float
+        distance in mm behind bregma for where to place lambdoid suture line
     marker_size : int
         size of the datapoints representing the eib channels and the brain region coordinates. default is 18.
     title : str
@@ -83,14 +86,11 @@ def plot_2d_implant(
     fig = make_subplots(cols=2, specs = [[{"type": "xy"}, {"type": "table"}]])
 
     # plot brain regions
-    fig.add_trace(go.Scattergl(x=df['ML'], y=df['AP'], mode='markers+text', text=df['Region'],
-                               textposition='top center', name='Brain',
-                               hovertext=['ML:{ml}<br>AP:{ap}<br>DV:{dv}<br>{r}'.format(
-                                   ml=np.round(row['ML'],3),
-                                   ap=np.round(row['AP'],3),
-                                   dv=np.round(row['DV'],3),
-                                   r=row['Region']) for _,row in df.iterrows()],
-                               marker=dict(color='teal', size=marker_size, line=dict(color='black', width=1))), row=1, col=1)
+
+    # draw bone suture lines
+    fig.add_vline(x=0, line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1) # midline
+    fig.add_hline(y=0, line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1) # bregma
+    fig.add_hline(y=-lambda_ap, line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1) # lambda
 
     # plot table with mapping and brain region coordinates
     table_cols = ['Region','ML','AP','DV','Type']
