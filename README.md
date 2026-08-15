@@ -14,6 +14,7 @@
 > 1. Proceed to `Implant` instructions below to construct the 3D-printable implant.
 > 1. Proceed to `PCB`, `Bottom PCB`, and `Top PCB` instructions to construct the bottom and top PCBs.
 > 1. Proceed to `Assembly` to put everything together.
+
 ***
 
 ### *Implant*
@@ -28,9 +29,13 @@
 > > - `regions.csv` (Original stereotaxic coordinates CSV)
 > > - `2d_implant.html` & `3d_implant.html` (interactive visualizations of the implant)
 > > - `3d_implant_animation.gif` (GIF of the 3D rotating implant for presentations)<br>
-<img src="./images/implant/2d_implant.svg" alt="2d_implant" height="300" />
-<img src="./images/implant/3d_implant.svg" alt="3d_implant" height="300" /><br>
-<img src="./images/implant/3d_implant_animation.gif" alt="3d_implant_animation" width="400" />
+
+<div align="center">
+    <img src="./images/implant/2d_implant.svg" alt="2d_implant" height="300" />
+    <img src="./images/implant/3d_implant.svg" alt="3d_implant" height="300" /><br>
+    <img src="./images/implant/3d_implant_animation.gif" alt="3d_implant_animation" width="400" />
+</div>
+
 ***
 
 ### *PCB*
@@ -57,8 +62,12 @@
 > > - `channel_map.csv` (mapping between each brain region and the EIB channel)
 > > - `autoroute.ses` (file with autorouting track data)
 > > - `figures/` (folder with visualizations of PCB)<br>
-<img src="./images/bottom_pcb/BottomPCB-top_view.svg" alt="bottom_pcb_top_view" height="400" />
-<img src="./images/bottom_pcb/BottomPCB-bottom_view.svg" alt="bottom_pcb_bottom_view" height="400" />
+
+<div align="center">
+    <img src="./images/bottom_pcb/BottomPCB-top_view.svg" alt="bottom_pcb_top_view" height="300" />
+    <img src="./images/bottom_pcb/BottomPCB-bottom_view.svg" alt="bottom_pcb_bottom_view" height="300" />
+</div>
+
 ***
 
 ### *Top PCB*
@@ -74,8 +83,12 @@
 > > - `NightCap_TopPCB_positions.csv` (file placement position for connector onto PCB)
 > > - `autoroute.ses` (file with autorouting track data)
 > > - `figures/` (folder with visualizations of PCB)<br>
-<img src="./images/top_pcb/TopPCB-top_view.svg" alt="top_pcb_top_view" height="400" />
-<img src="./images/top_pcb/TopPCB-bottom_view.svg" alt="top_pcb_bottom_view" height="400" />
+
+<div align="center">
+    <img src="./images/top_pcb/TopPCB-top_view.svg" alt="top_pcb_top_view" height="300" />
+    <img src="./images/top_pcb/TopPCB-bottom_view.svg" alt="top_pcb_bottom_view" height="300" />
+</div>
+
 ***
 
 
