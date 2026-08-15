@@ -8,6 +8,7 @@ import csv
 import math
 from functools import partial
 import shutil
+import re
 
 
 def draw_csv_outline(
@@ -658,40 +659,116 @@ def plot_pcb(
         ):
     '''
     (For Top and Bottom PCBs)
-    Plot and save SVGs of the top and bottom view of the PCB
+    Plot and save SVGs of the top and bottom view of the PCB.
     '''
-    
     fig_path = os.path.join(save_path, 'figures')
     os.makedirs(fig_path)
+
+    # calculate board bounding box (using edge cuts) for tight cropping
+    bbox = None
+    for item in board.GetDrawings():
+        if item.GetLayer() == pcbnew.Edge_Cuts:
+            item_bbox = item.GetBoundingBox()
+            if bbox is None:
+                bbox = item_bbox
+            else:
+                bbox.Merge(item_bbox)
+    x = bbox.GetX() / 1e6
+    y = bbox.GetY() / 1e6
+    w = bbox.GetWidth() / 1e6
+    h = bbox.GetHeight() / 1e6
+    
+    # add margin around the board
+    margin = 2.0 # in mm
+    x -= margin
+    y -= margin
+    w += margin * 2
+    h += margin * 2
 
     # initialize and configure plot controller
     pctl = pcbnew.PLOT_CONTROLLER(board)
     popt = pctl.GetPlotOptions()
     popt.SetOutputDirectory(fig_path)
+    popt.SetPlotFrameRef(False)
+    popt.SetAutoScale(False)
+    popt.SetScale(1)
+    popt.SetMirror(False) # to make absolute coordinates match the bounding box
     popt.SetDrillMarksType(pcbnew.DRILL_MARKS_FULL_DRILL_SHAPE)
     popt.SetSkipPlotNPTH_Pads(False)
     pctl.SetColorMode(True)
-    settings_manager = pcbnew.GetSettingsManager()
-    popt.SetColorSettings(settings_manager.GetColorSettings("kicad-default"))
+    
+    # apply modern KiCad color settings (KiCad 7+), otherwise pass
+    try:
+        settings_manager = pcbnew.GetSettingsManager()
+        popt.SetColorSettings(settings_manager.GetColorSettings("kicad-default"))
+    except AttributeError:
+        pass
 
-    # top view of PCB
-    popt.SetMirror(False)
-    pctl.OpenPlotfile("Top_View", pcbnew.PLOT_FORMAT_SVG, "Top View")
-    top_layers = [pcbnew.F_Cu, pcbnew.F_SilkS, pcbnew.Edge_Cuts]
+    def crop_and_style_svg(filepath, mirror_x=False, bg_color='#2b2b2b'):
+        '''
+        Helper to crop the canvas, apply mirroring, and add dark mode background.
+        '''
+        with open(filepath, 'r', encoding='utf-8') as f:
+            svg_data = f.read()
+            
+        if mirror_x: # if bottom view, apply mirror and inject background
+            vb_x = -x - w
+        else: # top view
+            vb_x = x
+
+        svg_data = re.sub(r'(<svg[^>]*?)viewBox="[^"]*"', rf'\1viewBox="{vb_x} {y} {w} {h}"', svg_data, count=1)
+        svg_data = re.sub(r'(<svg[^>]*?)width="[^"]*"', rf'\1width="{w}mm"', svg_data, count=1)
+        svg_data = re.sub(r'(<svg[^>]*?)height="[^"]*"', rf'\1height="{h}mm"', svg_data, count=1)
+
+        # add pixels to bg to prevent empty edge pixels
+        bg_x = vb_x - 1
+        bg_y = y - 1
+        bg_w = w + 2
+        bg_h = h + 2
+        bg_rect = f'<rect x="{bg_x}" y="{bg_y}" width="{bg_w}" height="{bg_h}" fill="{bg_color}"/>'
+        
+        if mirror_x:
+            svg_data = re.sub(r'(<svg[^>]*>)', rf'\1\n{bg_rect}\n<g transform="scale(-1, 1)">', svg_data, count=1)
+            svg_data = re.sub(r'(</svg>)', r'</g>\n\1', svg_data)
+        else:
+            svg_data = re.sub(r'(<svg[^>]*>)', rf'\1\n{bg_rect}', svg_data, count=1)
+
+        if 'style="background-color' not in svg_data:
+            svg_data = re.sub(r'(<svg[^>]*)>', fr'\1 style="background-color: {bg_color};">', svg_data, count=1)
+
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(svg_data)
+
+    has_inner_layers = board.GetCopperLayerCount() > 2
+
+    # draw top view
+    pctl.OpenPlotfile("top_view", pcbnew.PLOT_FORMAT_SVG, "Top View")
+    pctl.SetColorMode(True)
+    top_layers = [pcbnew.Edge_Cuts]
+    if has_inner_layers:
+        top_layers.extend([pcbnew.In2_Cu, pcbnew.In1_Cu])
+    top_layers.extend([pcbnew.F_Cu, pcbnew.F_SilkS])
     for layer in top_layers:
         pctl.SetLayer(layer)
-        pctl.SetColorMode(True)
-        pctl.PlotLayer()
-    pctl.ClosePlot()
-
-    # bottom view of PCB
-    popt.SetMirror(True)
-    pctl.OpenPlotfile("Bottom_View", pcbnew.PLOT_FORMAT_SVG, "Bottom View")
-    bottom_layers = [pcbnew.B_Cu, pcbnew.B_SilkS, pcbnew.Edge_Cuts]
-    for layer in bottom_layers:
-        pctl.SetLayer(layer)
-        pctl.SetColorMode(True)
         pctl.PlotLayer()
     pctl.ClosePlot()
     
-    print(f"Top and Bottom view SVGs successfully saved to {fig_path}")
+    top_filepath = pctl.GetPlotFileName()
+    crop_and_style_svg(top_filepath, mirror_x=False)
+
+    # draw bottom view
+    pctl.OpenPlotfile("bottom_view", pcbnew.PLOT_FORMAT_SVG, "Bottom View")
+    pctl.SetColorMode(True)
+    bot_layers = [pcbnew.Edge_Cuts]
+    if has_inner_layers:
+        bot_layers.extend([pcbnew.In1_Cu, pcbnew.In2_Cu])
+    bot_layers.extend([pcbnew.B_Cu, pcbnew.B_SilkS])
+    for layer in bot_layers:
+        pctl.SetLayer(layer)
+        pctl.PlotLayer()
+    pctl.ClosePlot()
+    
+    bot_filepath = pctl.GetPlotFileName()
+    crop_and_style_svg(bot_filepath, mirror_x=True)
+    
+    print(f"Top and bottom view SVGs saved to {fig_path}")
