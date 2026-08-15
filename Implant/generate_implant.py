@@ -66,7 +66,7 @@ if __name__ == '__main__':
     ## Make SCAD code for implant ##
     ################################
 
-    print("Generating implant.")
+    print("generating implant.")
     scad_code = f"// Import your STL model\nimport(\"{implant_stl_file}\");\n\n"
     for _, row in regions_df.iterrows():
         if row['Type'] != 'EMG':
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     ], capture_output=True, text=True)
 
     if result.returncode != 0:
-        print("❌ Error running OpenSCAD:")
+        print("❌ error running OpenSCAD:")
         print(result.stderr)
     else:
         print("✅ implant.stl generated successfully!")
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     ## Make SCAD code for depth guide ##
     ####################################
 
-    print("Generating depth guide.")
+    print("generating depth guide.")
     depth_guide_scad = f'import("{depth_stl_file}");\n\n'
     depth_guide_scad1 = ''
     depth_guide_scad2 = ''
@@ -151,7 +151,7 @@ if __name__ == '__main__':
     ], capture_output=True, text=True)
 
     if result2.returncode != 0:
-        print("❌ Error running OpenSCAD on DepthGuide:")
+        print("❌ error running OpenSCAD:")
         print(result2.stderr)
     else:
         print("✅ depth_guide.stl generated successfully!")
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     ## Generate and save channel mapping and plots ##
     #################################################
 
-    print('Saving regions.csv and visualizations.')
+    print('saving regions.csv and visualizations.')
     # round to prevent tiny trailing decimal values
     regions_df.loc[:,['ML','AP','DV']] = regions_df.loc[:,['ML','AP','DV']].round(3)
     regions_df.to_csv(os.path.abspath(os.path.join(save_path, 'regions.csv')))
@@ -188,7 +188,7 @@ if __name__ == '__main__':
         return_fig=True
         )
 
-    print(f'{regions_file} Generation Complete in folder {current_time}.')
+    print(f'{regions_file} generation complete in folder {current_time}.')
 
     #%%
     #############################################
