@@ -102,9 +102,10 @@ def plot_2d_implant(
         marker=dict(color='#ffffff', size=marker_size, line=dict(color='#c83434', width=3))), row=1, col=1)
 
     # draw bone suture lines
-    fig.add_vline(x=0, line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1) # midline
-    fig.add_hline(y=0, line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1) # bregma
-    fig.add_hline(y=-lambda_ap, line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1) # lambda
+    suture_line_specs = dict(line_color='#e8b2a7', line_dash='dash', line_width=2, opacity=1, row=1, col=1)
+    fig.add_vline(x=0, **suture_line_specs) # midline
+    fig.add_hline(y=0, **suture_line_specs) # bregma
+    fig.add_hline(y=-lambda_ap, **suture_line_specs) # lambda
 
     # plot table with mapping and brain region coordinates
     table_cols = ['Region','ML','AP','DV','Type']
