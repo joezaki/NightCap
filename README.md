@@ -1,6 +1,8 @@
 # NightCap
 
 > ### NightCap is a tool for constructing custom electrophysiology implants for performing multi-site electrophysiology. Given a set of stereotaxic coordinates for up to 16 brain regions, this pipeline will produce a 3D-printable implant along with a custom electrode interface board (EIB) where holes in both are stereotaxically defined.
+
+#### *Note: NightCap was made initially for performing long-term electrophysiology for sleep studies; however, this tool can be applied as readily to any chronic electrophysiology setup.*
 ***
 
 ## *Procedure*
@@ -16,9 +18,9 @@
 
 ### *Implant*
 > 1. In the `Implant` sub-folder, open the `generate_implant.py` file in a text editor. In the `Specify parameters` section, update `brain_regions_csv` with the filename of your stereotaxic coordinates file. Modify any other parameters of interest here.
-> 1. Open a terminal window, navigate to the `NightCap` folder: `cd ~/path/to/NightCap`.
-> 1. Create the conda environment: `conda env create -f environment.yml`.<br>*Note: If you do not have conda installed on your computer, navigate to [anaconda](anaconda.org) in a browser and install anaconda first.*
-> 1. Activate environment: `source activate nightcap`.
+> 1. Open a terminal window, navigate to the `NightCap` folder: `cd ~/path/to/NightCap`
+> 1. Create the conda environment: `conda env create -f environment.yml`<br>*Note: If you do not have conda installed on your computer, navigate to [anaconda](anaconda.org) in a browser and install anaconda first.*
+> 1. Activate environment: `source activate nightcap`
 > 1. Execute script: `python generate_implant.py`. It may take a few minutes to run. The terminal window will print statements as the pipeline progresses.
 > 1. A folder called `GeneratedFiles/Implant` should have been created. Check inside this folder for a folder with the current time. Inside this folder should be:
 > > - `implant.stl` & `depth_guide.stl` (3D-printable STL files)
@@ -30,18 +32,20 @@
 ***
 
 ### *PCB*
-> 1. For PCB construction, we will use the KiCad software. [Install it here.](kicad.org)
-> 1. Install Freerouting plugin:
+> 0. Only perform the following two steps prior to first use of this pipeline:
+> 1. For PCB construction, we will use the KiCad software. [Install KiCad here.](kicad.org)
+> 1. After installing KiCad, install the Freerouting plugin:
+> > - Open KiCad.
 > > - `Tools -> Plugin and Content Manager`
 > > - Find "Freerouting" and install.
 > > - Click "Apply Pending Changes"
-> > - Install Java from https://adoptium.net/temurin/releases
-> > - Restart KiCad
+> > - [Install Java here.](https://adoptium.net/temurin/releases)
+> > - After installation, restart KiCad.
 ***
 
 ### *Bottom PCB*
 > 1. In the `BottomPCB` subfolder, open `generate_bottom_pcb.py` file in a text editor. In the `Specify parameters` section, update `brain_regions_csv` with the filename of your stereotaxic coordinates file. Modify any other parameters of interest here.
-> 1. In KiCad, open project by clicking on `.../NightCap/PCB/BottomPCB/BottomPCB.kicad_pro`.
+> 1. In KiCad, open project by clicking on `.../NightCap/PCB/BottomPCB/BottomPCB.kicad_pro`
 > 1. Click on PCB Editor. A blank window should pop up.
 > 1. `Tools -> Scripting Console`
 > 1. Execute script: `exec(open('./generate_bottom_pcb.py').read())`
@@ -56,7 +60,7 @@
 
 ### *Top PCB*
 > 1. In the `TopPCB` subfolder, open `generate_top_pcb.py` file in a text editor. In the `Specify parameters` section, update `which_connector` to be one of `['molex', 'omnetics']`. Modify any other parameters of interest here.
-> 1. In KiCad, open project by clicking on `.../NightCap/PCB/TopPCB/TopPCB.kicad_pro`.
+> 1. In KiCad, open project by clicking on `.../NightCap/PCB/TopPCB/TopPCB.kicad_pro`
 > 1. Click on PCB Editor. A blank window should pop up.
 > 1. `Tools -> Scripting Console`
 > 1. Execute script: `exec(open('./generate_top_pcb.py').read())`
@@ -84,4 +88,4 @@
 > 1. Remove the depth guide.
 > 1. The implant is now ready for implantation. Finally, the implant is surgically implanted into the subject for recording.
 
-### Happy recording!
+### Happy recording! :sparkles:
