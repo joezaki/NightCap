@@ -28,10 +28,12 @@
 > > - `implant.stl` & `depth_guide.stl` (3D-printable STL files)
 > > - `implant.scad` & `depth_guide.scad` (SCAD files for constructing STL files)
 > > - `regions.csv` (Original stereotaxic coordinates CSV)
-> > - `2d_implant.html` & `3d_implant.html` (interactive visualizations of the implant)
+> > - `implant_depth_guide.html` (interactive visualization of the stl files for the implant and depth guide)
+> > - `2d_implant.html` & `3d_implant.html` (interactive visualizations of the implant mapping)
 > > - `3d_implant_animation.gif` (GIF of the 3D rotating implant for presentations)<br>
 
 <div align="center">
+    <img src="./images/implant/implant_depth_guide.svg" alt="implant_depth_guide" width="700" /><br>
     <img src="./images/implant/2d_implant.svg" alt="2d_implant" width="700" /><br>
     <img src="./images/implant/3d_implant.svg" alt="3d_implant" width="700" /><br>
     <img src="./images/implant/3d_implant_animation.gif" alt="3d_implant_animation" width="700" />
