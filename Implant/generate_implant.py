@@ -12,6 +12,7 @@ from dask.distributed import Client, LocalCluster
 
 from utilities import (
     scad_tunnel,
+    plot_implant_depth_guide,
     plot_2d_implant,
     plot_3d_implant,
     figs_to_gif
@@ -166,6 +167,14 @@ if __name__ == '__main__':
     regions_df.loc[:,['ML','AP','DV']] = regions_df.loc[:,['ML','AP','DV']].round(3)
     regions_df.to_csv(os.path.abspath(os.path.join(save_path, 'regions.csv')))
 
+    # plot implant and depth guide
+    plot_implant_depth_guide(
+        implant_path=implant_path+'.stl',
+        depth_guide_path=depth_guide_path+'.stl',
+        title=regions_file,
+        save_path=save_path
+    )
+
     # plot 2d mapping
     plot_2d_implant(
         regions_df,
@@ -182,8 +191,6 @@ if __name__ == '__main__':
         save_path=save_path,
         return_fig=True
         )
-
-    print(f'{regions_file} generation complete in folder {current_time}.')
 
     #%%
     #############################################
@@ -202,7 +209,7 @@ if __name__ == '__main__':
         client = Client(cluster)
 
         # specify a list of angles of the implant to include in the gif
-        angles = range(-180, 180+rotating_gif_step_size, rotating_gif_step_size)
+        angles = range(-180, 180, rotating_gif_step_size)
 
         frames = []
         for i, angle in enumerate(tqdm(angles)):
@@ -221,7 +228,7 @@ if __name__ == '__main__':
             save_path = os.path.join(save_path, '3d_implant_animation.gif'),
             temp_save_path=os.path.join(save_path, 'temp_gif_frames'),
             scale=2,
-            duration=200,
+            duration=50,
             width=800,
             height=800,
             loop=0
@@ -229,3 +236,5 @@ if __name__ == '__main__':
         print("GIF saved successfully.")
 
         client.close()
+
+    print(f'{regions_file} generation complete in folder {current_time}.')

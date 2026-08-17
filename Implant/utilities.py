@@ -1,6 +1,7 @@
 import os
 import math
 import numpy as np
+from stl import mesh
 import pandas as pd
 import shutil
 
@@ -62,6 +63,83 @@ def load_mesh_data(filepath):
     mesh_dict = dict(x=x, y=y, z=z, i=i, j=j, k=k)
     
     return mesh_dict
+
+
+def plot_implant_depth_guide(
+    implant_path,
+    depth_guide_path,
+    title=None,
+    save_path=None,
+    return_fig=False
+):
+    '''
+    Plots the resulting STL meshes for the implant and depth guide
+    using the STL files that were created from the pipeline.
+
+    Parameters
+    ==========
+    implant_path, depth_guide_path : str
+        paths to the final stl files for the implant and depth guide, respectively.
+    title : str
+        optional title for the entire plot. default is None.
+    save_path : str
+        path to the directory where the plot will be saved. Default is None.
+    return_fig : bool
+        whether or not to return the fig object. Default is False.
+    '''
+
+    fig = make_subplots(
+        cols=2, horizontal_spacing=0.02,
+        specs = [[{"type": "surface"}, {"type": "surface"}]],
+        subplot_titles=['Implant', 'Depth guide']
+        )
+
+    # load meshes
+    implant_mesh = load_mesh_data(implant_path)
+    depth_mesh = load_mesh_data(depth_guide_path)
+
+    # plot meshes
+    fig.add_trace(go.Mesh3d(
+        **implant_mesh,
+        color='#ffffff', opacity=1, name='Implant',
+        hoverinfo='none', showlegend=True,
+        ), row=1, col=1)
+
+    fig.add_trace(go.Mesh3d(
+        **depth_mesh,
+        color='#ffffff', opacity=1, name='Depth Guide',
+        hoverinfo='none', showlegend=True,
+        ), row=1, col=2)
+
+    # configure plot
+    axis_specs_3d = dict(backgroundcolor="#2b2b2b", showbackground=True, gridcolor='#4a4a4a', linecolor='#ffffff')
+    fig.update_layout(
+        template='plotly_dark', width=1000, height=600, font=dict(size=12, color='#ffffff'), showlegend=False,
+        title_text=title, margin=dict(t=80, r=0, l=0, b=0), paper_bgcolor='#2b2b2b',
+        )
+    fig.update_scenes(
+            bgcolor="#2b2b2b",
+            aspectmode='data',
+            camera=dict(eye=dict(x=3.5, y=-3.5, z=2)),
+            xaxis=dict(**axis_specs_3d, title_text='ML'),
+            yaxis=dict(**axis_specs_3d, title_text='AP'),
+            zaxis=dict(**axis_specs_3d, title_text='DV'),
+            )
+    config = {'toImageButtonOptions': {'format': 'svg'}}
+
+    # optionally save
+    if save_path is not None:
+        save_path = os.path.abspath(save_path)
+        output_file = os.path.join(save_path, f"implant_depth_guide.html")
+        if not os.path.exists(save_path):
+            print('Making directory at: {}'.format(save_path))
+            os.makedirs(save_path)
+        fig.write_html(output_file, config=config)
+    else:
+        fig.show(config=config)
+
+    if return_fig:
+        return fig
 
 
 def plot_2d_implant(
@@ -208,7 +286,7 @@ def plot_3d_implant(
     # plot holes for implant
     fig.add_trace(go.Scatter3d(
         x=df['ML'], y=df['AP'], z=np.repeat(implant_height, df.shape[0]),
-        text=df['Region'], mode='markers', marker=dict(color='#c83434', size=10),
+        text=df['Region'], mode='markers', marker=dict(color='#c83434', size=5),
         hoverinfo='text', showlegend=True, name='Regions',
         hovertext=['Region {r}<br>ML: {ml}<br>AP: {ap}<br>DV: {dv}'.format(
             r=row['Region'],
