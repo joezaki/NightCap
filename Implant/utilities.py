@@ -50,6 +50,20 @@ cylinder(
 """
 
 
+def load_mesh_data(filepath):
+    '''
+    Given a filepath to an stl file, load the vertices
+    (x,y,z) and the faces (i,j,k).
+    '''
+
+    stl_mesh = mesh.Mesh.from_file(filepath)
+    x, y, z = stl_mesh.vectors.reshape(-1, 3).T
+    i, j, k = np.arange(len(x)).reshape(-1, 3).T
+    mesh_dict = dict(x=x, y=y, z=z, i=i, j=j, k=k)
+    
+    return mesh_dict
+
+
 def plot_2d_implant(
     regions_df,
     lambda_ap=4.2,
@@ -152,7 +166,7 @@ def plot_2d_implant(
 
 def plot_3d_implant(
     regions_df,
-    implant_mesh,
+    implant_path,
     implant_height,
     title=None,
     save_path=None,
@@ -168,8 +182,8 @@ def plot_3d_implant(
     ==========
     regions_df : pandas df
         df representing the brain region stereotaxic coordinates
-    implant_mesh : numpy array
-        a numpy array representing the vertices of the implant, for drawing the mesh
+    implant_path : str
+        path to implant.stl file
     implant_height : float
         the height of the implant in millimeters, for drawing.
     title : str
@@ -183,9 +197,10 @@ def plot_3d_implant(
     df = regions_df.copy()
     fig = go.Figure()
 
+    implant_mesh = load_mesh_data(implant_path)
     # plot mesh for implant outline
     fig.add_trace(go.Mesh3d(
-        x=implant_mesh[:,0], y=implant_mesh[:,1], z=implant_mesh[:,2],
+        **implant_mesh,
         color='#ffffff', opacity=0.5, alphahull=0.1, name='Implant',
         hoverinfo='none', showlegend=True
         ))

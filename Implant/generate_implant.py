@@ -3,7 +3,6 @@ import os
 import sys
 import subprocess
 import numpy as np
-from stl import mesh
 import pandas as pd
 from datetime import datetime
 
@@ -175,14 +174,9 @@ if __name__ == '__main__':
         )
 
     # plot 3d mapping
-    implant_mesh = mesh.Mesh.from_file(implant_stl_file)
-    raw_vectors = implant_mesh.vectors 
-    all_vertices = raw_vectors.reshape(-1, 3)
-    implant_mesh = np.unique(all_vertices, axis=0)
-    implant_mesh = implant_mesh[::2,:] # downsample vertices for better plotting
     fig = plot_3d_implant(
         regions_df,
-        implant_mesh=implant_mesh,
+        implant_path=implant_path+'.stl',
         implant_height=implant_height,
         title=regions_file,
         save_path=save_path,
