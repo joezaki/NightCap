@@ -39,7 +39,7 @@ if __name__ == '__main__':
     depth_inner_radius = hole_radius + 0.05
 
     generate_rotating_gif = True # whether or not to save a gif of the rotating 3d implant
-    rotating_gif_step_size = 10 # step size in degrees for each frame in rotating gif
+    rotating_gif_step_size = 6 # step size in degrees for each frame in rotating gif
 
     #%%
     ###################################################################################

@@ -1,15 +1,53 @@
 import os
-import math
 import numpy as np
 from stl import mesh
-import pandas as pd
 import shutil
 
-import io
 from PIL import Image
-import plotly
 import plotly.graph_objects as go
+import plotly.io as pio
 from plotly.subplots import make_subplots
+
+# generate custom plotly template
+custom_dark_template = go.layout.Template()
+dark_grey = '#2b2b2b'
+light_grey = '#444444'
+darker_grey = '#1e1e1e'
+custom_dark_template.layout = dict(
+    paper_bgcolor=dark_grey,
+    plot_bgcolor=dark_grey,
+    font=dict(size=15, color='#ffffff'),
+    margin=dict(t=80, r=0, l=0, b=0),
+    legend=dict(
+        orientation='h', yanchor='top', xanchor='center', 
+        x=0.5, y=0.9, bgcolor=dark_grey
+    ))
+custom_dark_template.layout.xaxis = dict(
+    color="#ffffff",
+    tickfont=dict(color="#ffffff"),
+    gridcolor=light_grey
+    )
+custom_dark_template.layout.yaxis = dict(
+    color="#ffffff",
+    tickfont=dict(color="#ffffff"),
+    gridcolor=light_grey
+    )
+axis_specs_3d = dict(
+    backgroundcolor=dark_grey,
+    showbackground=True, 
+    gridcolor='#4a4a4a',
+    linecolor='#ffffff'
+    )
+custom_dark_template.layout.scene = dict(
+    bgcolor=dark_grey,
+    camera=dict(eye=dict(x=1, y=-2, z=1)),
+    xaxis=dict(**axis_specs_3d),
+    yaxis=dict(**axis_specs_3d),
+    zaxis=dict(**axis_specs_3d)
+)
+pio.templates["custom_dark"] = custom_dark_template
+pio.templates.default = "plotly_dark+custom_dark"
+
 
 def scad_tunnel(
         implant_height,
@@ -112,18 +150,16 @@ def plot_implant_depth_guide(
         ), row=1, col=2)
 
     # configure plot
-    axis_specs_3d = dict(backgroundcolor="#2b2b2b", showbackground=True, gridcolor='#4a4a4a', linecolor='#ffffff')
     fig.update_layout(
-        template='plotly_dark', width=1000, height=600, font=dict(size=12, color='#ffffff'), showlegend=False,
-        title_text=title, margin=dict(t=80, r=0, l=0, b=0), paper_bgcolor='#2b2b2b',
+        width=1000, height=600, font=dict(size=12),
+        title_text=title, showlegend=False
         )
     fig.update_scenes(
-            bgcolor="#2b2b2b",
             aspectmode='data',
             camera=dict(eye=dict(x=3.5, y=-3.5, z=2)),
-            xaxis=dict(**axis_specs_3d, title_text='ML'),
-            yaxis=dict(**axis_specs_3d, title_text='AP'),
-            zaxis=dict(**axis_specs_3d, title_text='DV'),
+            xaxis=dict(title_text='ML'),
+            yaxis=dict(title_text='AP'),
+            zaxis=dict(title_text='DV'),
             )
     config = {'toImageButtonOptions': {'format': 'svg'}}
 
@@ -185,7 +221,7 @@ def plot_2d_implant(
     fig.add_trace(go.Scattergl(
         x=df['ML'], y=df['AP'], mode='markers+text',
         text=df['Region'], textfont=dict(size=12),
-        textposition='top center', name='Brain',
+        textposition='top center', name='Regions',
         hovertext=['ML:{ml}<br>AP:{ap}<br>DV:{dv}<br>{r}'.format(
             ml=np.round(row['ML'],3),
             ap=np.round(row['AP'],3),
@@ -211,18 +247,17 @@ def plot_2d_implant(
     # configure plot
     fig.update_layout(
         template='simple_white', width=1200, height=720, showlegend=False,
-        xaxis_title='ML', yaxis_title='AP', font=dict(size=15, color='#ffffff'),
-        paper_bgcolor='#2b2b2b', plot_bgcolor='#2b2b2b', title_text=title,
-        xaxis=dict(linecolor='#ffffff'),
-        yaxis=dict(linecolor='#ffffff')
+        font=dict(color='#ffffff'), title_text=title,
+        paper_bgcolor='#2b2b2b', plot_bgcolor='#2b2b2b',
+        xaxis=dict(linecolor='#ffffff', title_text='ML'),
+        yaxis=dict(linecolor='#ffffff', title_text='AP')
         )
     fig.update_yaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
     fig.update_xaxes(title_font=dict(size=18), tickfont=dict(size=18), row=1, col=1)
-
     fig.update_traces(
         selector=dict(type='table'),
-        header=dict(fill_color="#1e1e1e", font=dict(color="white"), line_color="#444444"),
-        cells=dict(fill_color="#2b2b2b", font=dict(color="white"), line_color="#444444")
+        header=dict(fill_color="#1e1e1e", font=dict(color="#ffffff"), line_color="#444444"),
+        cells=dict(fill_color="#2b2b2b", font=dict(color="#ffffff"), line_color="#444444")
         )
 
     config = {'toImageButtonOptions': {'format': 'svg'}}
@@ -312,17 +347,14 @@ def plot_3d_implant(
             ))
 
     # configure plot
-    axis_specs_3d = dict(backgroundcolor="#2b2b2b", showbackground=True, gridcolor='#4a4a4a', linecolor='#ffffff')
     fig.update_layout(
-        template='plotly_dark', width=800, height=800, font=dict(size=15, color='#ffffff'), showlegend=True,
-        legend=dict(orientation='h', yanchor='top', xanchor='center', x=0.5, y=0.9, bgcolor='#2b2b2b'),
-        title_text=title, margin=dict(t=80, r=0, l=0, b=0), paper_bgcolor='#2b2b2b',
+        width=800, height=800,
+        title_text=title, showlegend=True,
         scene_camera=dict(eye=dict(x=1, y=-2, z=1)),
         scene=dict(
-            bgcolor="#2b2b2b",
-            xaxis=dict(**axis_specs_3d, title_text='ML'),
-            yaxis=dict(**axis_specs_3d, title_text='AP'),
-            zaxis=dict(**axis_specs_3d, title_text='DV')
+            xaxis=dict(title_text='ML'),
+            yaxis=dict(title_text='AP'),
+            zaxis=dict(title_text='DV')
             ))
     config = {'toImageButtonOptions': {'format': 'svg'}}
 
@@ -384,7 +416,7 @@ def figs_to_gif(
     # temporarily save frames (most time intensive step)
     print('saving temporary frame files.')
     print(f'keep track of progress in {temp_save_path}')
-    plotly.io.write_images(
+    pio.write_images(
         fig=figs,
         file=filenames,
         scale=scale,
