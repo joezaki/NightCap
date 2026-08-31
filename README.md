@@ -10,27 +10,31 @@
 
 > 1.  First, create a CSV file of stereotaxic locations with the following columns: `['Region', 'AP', 'ML', 'DV', 'Type']`.
 > 1. Type should be one of `['LFP', 'GND', 'REF', 'EEG', 'EMG']`.
-> 1. Save this file in the `StereotaxCoords` folder.
+> 1. Save this file to the `StereotaxCoords` folder.
 > 1. Proceed to `Implant` instructions below to construct the 3D-printable implant.
 > 1. Proceed to `PCB`, `Bottom PCB`, and `Top PCB` instructions to construct the bottom and top PCBs.
 > 1. Proceed to `Assembly` to put everything together.<br>
-> *Note: Images below are examples from running the pipeline on the CSV provided in the repo: `/StereotaxCoords/CTX_TH_HPC_Bilateral_16Ch.csv`*
+> *Note: Images below are examples from running the pipeline on the CSV provided in the repo: `./StereotaxCoords/CTX_TH_HPC_Bilateral_16Ch.csv`*
 
 ***
 
 ### *Implant*
+> 1. We will be using OpenSCAD to construct the 3d-printable STL files. [Install OpenSCAD here.](https://openscad.org) *Note that you may first have to allow your computer to trust the program before you can open it.*
 > 1. In the `Implant` sub-folder, open the `generate_implant.py` file in a text editor. In the `Specify parameters` section, update `brain_regions_csv` with the filename of your stereotaxic coordinates file. Modify any other parameters of interest here.
-> 1. Open a terminal window, navigate to the `NightCap` folder: `cd ~/path/to/NightCap`
-> 1. Create the conda environment: `conda env create -f environment.yml`<br>*Note: If you do not have conda installed on your computer, navigate to [anaconda](anaconda.org) in a browser and install anaconda first.*
+> 1. Open a terminal window, navigate to where you cloned the `NightCap` folder: `cd ~/path/to/NightCap`
+> 1. Create the conda environment: `conda env create -f environment.yml`<br>*Note: If you do not have conda installed on your computer, [install Anaconda here](https://anaconda.org) first.*
 > 1. Activate environment: `source activate nightcap`
 > 1. Execute script: `python generate_implant.py`. It may take a few minutes to run. The terminal window will print statements as the pipeline progresses.
-> 1. A folder called `GeneratedFiles/Implant` should have been created. Check inside this folder for a folder with the current time. Inside this folder should be:
-> > - `implant.stl` & `depth_guide.stl` (3D-printable STL files)
-> > - `implant.scad` & `depth_guide.scad` (SCAD files for constructing STL files)
-> > - `regions.csv` (Original stereotaxic coordinates CSV)
-> > - `implant_depth_guide.html` (interactive visualization of the stl files for the implant and depth guide)
-> > - `2d_implant.html` & `3d_implant.html` (interactive visualizations of the implant mapping)
-> > - `3d_implant_animation.gif` (GIF of the 3D rotating implant for presentations)<br>
+> 1. A folder called `./GeneratedFiles/Implant` should have been created. Check inside this folder for a folder with the current time. Inside this folder should be:
+
+| File/Folder                                       | Description |
+| -----------                                       | ----------- |
+| `implant.stl` & `depth_guide.stl`          | 3D-printable STL files |
+| `implant.scad` & `depth_guide.scad` | SCAD files for constructing STL files |
+| `regions.csv` | original stereotaxic coordinates CSV |
+| `implant_depth_guide.html`  | interactive visualization of the stl files for the implant and depth guide |
+| `2d_implant.html` & `3d_implant.html`  | interactive visualizations of the implant mapping |
+| `3d_implant_animation.gif` | GIF of the 3D rotating implant for presentations (optional) |
 
 <div align="center">
     <img src="./images/implant/implant_depth_guide.svg" alt="implant_depth_guide" width="700" /><br>
@@ -43,7 +47,7 @@
 
 ### *PCB*
 > 0. Only perform the following two steps prior to first use of this pipeline:
-> 1. For PCB construction, we will use the KiCad software. [Install KiCad here.](kicad.org)
+> 1. For PCB construction, we will use the KiCad software. [Install KiCad here.](https://kicad.org)
 > 1. After installing KiCad, install the Freerouting plugin:
 > > - Open KiCad
 > > - `Tools -> Plugin and Content Manager`
@@ -60,12 +64,15 @@
 > 1. Click on PCB Editor. A blank window should pop up.
 > 1. `Tools -> Scripting Console`
 > 1. Execute script: `exec(open('./generate_bottom_pcb.py').read())`
-> 1. A folder should have been created in `GeneratedFiles/BottomPCB/` with the current time. Inside this folder should be:
-> > - `NightCap_BottomPCB_JLCPCB_Production.zip` (main file to upload to JLCPCB for PCB construction)
-> > - `NightCap_BottomPCB_Gerbers/` (folder with gerber files for PCB construction)
-> > - `channel_map.csv` (mapping between each brain region and the EIB channel)
-> > - `autoroute.ses` (file with autorouting track data)
-> > - `figures/` (folder with visualizations of PCB)<br>
+> 1. A folder should have been created in `./GeneratedFiles/BottomPCB/` with the current time. Inside this folder should be:
+
+| File/Folder                                | Description |
+| -----------                                | ----------- |
+| `NightCap_BottomPCB_JLCPCB_Production.zip` | main file to upload to JLCPCB for PCB construction |
+| `NightCap_BottomPCB_Gerbers/`              | folder with gerber files for PCB construction |
+| `channel_map.csv`                          | mapping between each brain region and the EIB channel |
+| `autoroute.ses`                            | file with autorouting track data |
+| `figures/`                                 | folder with visualizations of PCB |
 
 <div align="center">
     <img src="./images/bottom_pcb/BottomPCB-top_view.svg" alt="bottom_pcb_top_view" width="350" />
@@ -80,13 +87,16 @@
 > 1. Click on PCB Editor. A blank window should pop up.
 > 1. `Tools -> Scripting Console`
 > 1. Execute script: `exec(open('./generate_top_pcb.py').read())`
-> 1. A folder should have been created in `GeneratedFiles/TopPCB/` with the current time. Inside this folder should be:
-> > - `NightCap_TopPCB_JLCPCB_Production.zip` (main file to upload to JLCPCB for PCB construction)
-> > - `NightCap_TopPCB_Gerbers/` (folder with gerber files for PCB construction)
-> > - `NightCap_TopPCB_BOM.csv` (file for bill of materials for connector (molex or omnetics))
-> > - `NightCap_TopPCB_positions.csv` (file placement position for connector onto PCB)
-> > - `autoroute.ses` (file with autorouting track data)
-> > - `figures/` (folder with visualizations of PCB)<br>
+> 1. A folder should have been created in `./GeneratedFiles/TopPCB/` with the current time. Inside this folder should be:
+
+| File/Folder                             | Description |
+| -----------                             | ----------- |
+| `NightCap_TopPCB_JLCPCB_Production.zip` | main file to upload to JLCPCB for PCB construction |
+| `NightCap_TopPCB_Gerbers/`              | folder with gerber files for PCB construction |
+| `NightCap_TopPCB_BOM.csv`               | file for bill of materials for connector (molex or omnetics) |
+| `NightCap_TopPCB_positions.csv`         | file placement position for connector onto PCB |
+| `autoroute.ses`                         | file with autorouting track data |
+| `figures/`                              | folder with visualizations of PCB |
 
 <div align="center">
     <img src="./images/top_pcb/TopPCB-top_view.svg" alt="top_pcb_top_view" width="350" />
@@ -96,7 +106,8 @@
 ***
 
 ### *Assembly*
-> 0. Once implant, depth guide, top PCB, and bottom PCB have been created, the whole implant needs to be assembled.
+> 0. After following the steps above, the implant and depth guide need to be 3D-printed (we use the FormLabs Form4), and the Top and Bottom PCBs need to be constructed (we use [JLCPCB](https://jlcpcb.com)).
+> 1. Once implant, depth guide, top PCB, and bottom PCB have been created, the whole implant needs to be assembled.
 > 1. First, take wire of your choosing (we have been using [Stablohm 650 wire](https://calfinewire.com/item/alloys/all-alloys/100187-stablohm-650-wire) for LFP wires and [PFA-Coated Silver Wire 786000](https://www.a-msystems.com/p-796-pfa-coated-silver-wire.aspx) for EEG and EMG wires).
 > 1. Cut each wire to ~20mm long using sharp scissors, and strip 1mm of insulation off one end of each wire. This side will connect to the bottom PCB.
 > 1. Feed header pins into each outer via on the bottom PCB and solder into place.
