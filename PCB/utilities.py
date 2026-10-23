@@ -135,8 +135,8 @@ def add_outer_holes(
     board,
     board_offset_x,
     board_offset_y,
-    pad_diameter_mm=1.3,   # standard 0.1" header pad OD
-    drill_diameter_mm=0.9, # standard 0.1" header pin drill (0.9-1.0mm typical)
+    pad_diameter_mm=0.9,
+    drill_diameter_mm=0.5, # for a 0.3mm diameter header pins
 ):
     '''
     (For Top and Bottom PCBs)
@@ -441,7 +441,7 @@ def label_outer_holes(
         
         label.SetPosition(pcbnew.VECTOR2I_MM(lbl_x, lbl_y))
         label.SetLayer(f_silk)
-        label.SetTextSize(pcbnew.VECTOR2I_MM(0.3, 0.3))
+        label.SetTextSize(pcbnew.VECTOR2I_MM(0.5, 0.5))
         board.Add(label)
 
 
@@ -478,7 +478,7 @@ def label_inner_vias(
             via_label.SetText(region.split('_')[0])
             via_label.SetPosition(pcbnew.VECTOR2I_MM(x, y))
             via_label.SetLayer(b_silk) # Placing on Bottom Silk
-            via_label.SetTextSize(pcbnew.VECTOR2I_MM(0.3, 0.3))
+            via_label.SetTextSize(pcbnew.VECTOR2I_MM(0.5, 0.5))
             via_label.SetMirrored(True)
             via_label.SetTextThickness(pcbnew.FromMM(0.1))
             board.Add(via_label)
