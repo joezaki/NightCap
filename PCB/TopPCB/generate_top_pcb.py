@@ -120,21 +120,20 @@ utilities.label_outer_holes(
 )
 b_silk = pcbnew.B_SilkS
 
-# Draw magnet outlines
-utilities.draw_magnet_circle( # top left magnet
-    center_x=board_offset_x - 3,
-    center_y=board_offset_y - 3.50,
-    radius=1.5875,
-    board=board,
-    b_silk=b_silk
-    )
-utilities.draw_magnet_circle( # bottom right magnet
-    center_x=board_offset_x + 3,
-    center_y=board_offset_y + 7.5,
-    radius=1.5875,
-    board=board,
-    b_silk=b_silk
-    )
+# Draw magnet outlines in the 4 corners
+for magnet_coords in [
+    [-3, -3.5], # top left
+    [-3,  7.5], # top right
+    [ 3, -3.5], # bottom left
+    [ 3,  7.5]  # bottom right
+]:    
+    utilities.draw_magnet_circle(
+        center_x=board_offset_x + magnet_coords[0],
+        center_y=board_offset_y + magnet_coords[1],
+        radius=1.5875,
+        board=board,
+        b_silk=b_silk
+        )
 
 # Remove reference labels to declutter PCB
 for module in board.Footprints():
