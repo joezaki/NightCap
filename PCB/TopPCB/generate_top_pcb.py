@@ -27,7 +27,7 @@ board_offset_x += (board_width/2)
 board_offset_y += (board_height/2)
 
 board = pcbnew.GetBoard()
-board.SetCopperLayerCount(2)
+board.SetCopperLayerCount(4)
 design_settings = board.GetDesignSettings()
 design_settings.m_MinClearance = pcbnew.FromMM(0.12)
 design_settings.SetBoardThickness(pcbnew.FromMM(0.8))
