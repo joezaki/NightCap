@@ -71,7 +71,7 @@ inner_vias = utilities.add_inner_vias(
     )
 
 # Match inner vias to outer through-holes
-cx, cy = utilities.match_vias_holes(
+cx, cy, matched_pairs = utilities.match_vias_holes(
     outer_holes=outer_holes,
     inner_vias=inner_vias,
     board=board)
@@ -158,7 +158,7 @@ utilities.plot_pcb(board=board, save_path=save_path)
 
 # Generate channel_map.csv matching inner via regions to outer PTH channels
 channel_map = [['Region', 'AP', 'ML', 'DV', 'Ch']]
-for region, ch in zip(inner_vias, outer_holes):
+for region, ch, _ in matched_pairs:
     channel_map.append([region['ch'], region['ap'], region['ml'], region['dv'], ch['ch']])
 with open(os.path.join(save_path, "channel_map.csv"), mode="w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)

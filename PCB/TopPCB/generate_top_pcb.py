@@ -99,8 +99,8 @@ pairs = utilities.load_pin_to_hole_matching_csv(
     holes=outer_holes_dict,
     pins=connector_pads
 )
-for pin, hole, net_suffix in pairs:
-    net_name = f"Net_{net_suffix}"
+for pin, hole, _ in pairs:
+    net_name = f"Net_{hole['ch']}"
     net = board.FindNet(net_name)
 
     if net is None:
