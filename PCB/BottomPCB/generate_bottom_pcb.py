@@ -29,11 +29,11 @@ board_offset_y += (board_height/2)
 board = pcbnew.GetBoard()
 board.SetCopperLayerCount(4)
 design_settings = board.GetDesignSettings()
-design_settings.m_MinClearance = pcbnew.FromMM(0.10)
+design_settings.m_MinClearance = pcbnew.FromMM(0.12)
 design_settings.SetBoardThickness(pcbnew.FromMM(0.8))
 net_settings = design_settings.m_NetSettings
 default_netclass = net_settings.GetDefaultNetclass()
-default_netclass.SetClearance(pcbnew.FromMM(0.10))
+default_netclass.SetClearance(pcbnew.FromMM(0.12))
 default_netclass.SetTrackWidth(pcbnew.FromMM(0.15))
 
 close_editor = True # whether or not to close the PCB editor automatically at the end
