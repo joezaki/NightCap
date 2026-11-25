@@ -190,7 +190,9 @@ def add_inner_vias(
         brain_regions_csv,
         board,
         board_offset_x,
-        board_offset_y
+        board_offset_y,
+        pad_diameter_mm=0.65,
+        drill_diameter_mm=0.3
         ):
     '''
     (For Bottom PCB)
@@ -221,8 +223,8 @@ def add_inner_vias(
             pad.SetShape(pcbnew.PAD_SHAPE_CIRCLE)
 
             # size and position
-            pad.SetSize(pcbnew.VECTOR2I_MM(0.45, 0.45))
-            pad.SetDrillSize(pcbnew.VECTOR2I_MM(0.2, 0.2))
+            pad.SetSize(pcbnew.VECTOR2I_MM(pad_diameter_mm, pad_diameter_mm))
+            pad.SetDrillSize(pcbnew.VECTOR2I_MM(drill_diameter_mm, drill_diameter_mm))
             pad.SetPosition(pcbnew.VECTOR2I_MM(x, y))
             pad.SetLayerSet(pad.PTHMask()) 
             pad.SetPadName(ch)
