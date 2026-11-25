@@ -442,6 +442,7 @@ def label_outer_holes(
         label.SetPosition(pcbnew.VECTOR2I_MM(lbl_x, lbl_y))
         label.SetLayer(f_silk)
         label.SetTextSize(pcbnew.VECTOR2I_MM(0.5, 0.5))
+        label.SetTextThickness(pcbnew.FromMM(0.15))
         board.Add(label)
 
 
@@ -480,7 +481,7 @@ def label_inner_vias(
             via_label.SetLayer(b_silk) # Placing on Bottom Silk
             via_label.SetTextSize(pcbnew.VECTOR2I_MM(0.5, 0.5))
             via_label.SetMirrored(True)
-            via_label.SetTextThickness(pcbnew.FromMM(0.1))
+            via_label.SetTextThickness(pcbnew.FromMM(0.15))
             board.Add(via_label)
 
 
