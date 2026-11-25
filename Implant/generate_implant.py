@@ -34,11 +34,12 @@ if __name__ == '__main__':
 
     hole_radius = 0.23 # radius of each hole in implant
     implant_height = 4.75 # in mm, one of [3, 4, 4.75]
+    add_legs = True # whether or not to add 4 outer legs for header pins in the implant
 
     depth_outer_radius = 0.55 # outer radius of each hole in depth guide
     depth_inner_radius = hole_radius + 0.05
 
-    generate_rotating_gif = True # whether or not to save a gif of the rotating 3d implant
+    generate_rotating_gif = False # whether or not to save a gif of the rotating 3d implant
     rotating_gif_step_size = 6 # step size in degrees for each frame in rotating gif
 
     #%%
@@ -59,6 +60,8 @@ if __name__ == '__main__':
     regions_df = pd.read_csv('../StereotaxCoords/{}.csv'.format(regions_file))
 
     implant_stl = f'ImplantBlank_H{implant_height}mm'.replace('.', '_')
+    if add_legs:
+        implant_stl += '_4Legs'
     implant_stl_file = os.path.abspath(f"./SCAD_Files/{implant_stl}.stl").replace("\\", "/")
     depth_stl_file = os.path.abspath("./SCAD_Files/DepthGuideBlank.stl").replace("\\", "/")
 
