@@ -69,17 +69,21 @@ connectors_dict = {
     'omnetics' : "CONN-SMD_18P-P0.64_A79042-001"
 }
 footprint_name = connectors_dict[which_connector]
-rotation_deg = (
-    90 if which_connector=='omnetics' else \
-    270 if which_connector=='molex' else \
-    Exception('Invalid connector type.')
-)
+if which_connector == 'omnetics':
+    rotation_deg = 90
+elif which_connector == 'molex':
+    rotation_deg = 270
+else:
+    raise Exception('Invalid connector type.')
+
+connector_x = board_offset_x
+connector_y = board_offset_y + 2.5
 connector = utilities.place_footprint(
     board,
     library_path,
     footprint_name,
-    board_offset_x,
-    board_offset_y + 2.5,
+    connector_x,
+    connector_y,
     rotation_deg=rotation_deg,
     reference="C1"
 )
@@ -174,7 +178,7 @@ with open(os.path.join(save_path, "NightCap_TopPCB_positions.csv"), mode="w", ne
     writer = csv.writer(file)
     connector_placement = [
         ['Designator', 'Mid X', 'Mid Y', 'Rotation', 'Layer'],
-        ['C1', board_offset_x, board_offset_y, rotation_deg, 'Top']
+        ['C1', connector_x, connector_y, rotation_deg, 'Top']
     ]
     writer.writerows(connector_placement)
 
