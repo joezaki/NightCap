@@ -295,7 +295,7 @@ def match_vias_holes(
         via['obj'].SetNetCode(net_code)
         hole['obj'].SetNetCode(net_code)
         print(f"Inner via '{via['ch']}' mapped to outer PTH '{hole['ch']}' -> {net_name}")
-    return cx, cy
+    return cx, cy, pairs
 
 
 def place_footprint(
