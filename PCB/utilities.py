@@ -79,10 +79,9 @@ def draw_csv_outline(
             point_type = (point_type.strip().lower())
 
             # convert to KiCad's coordinate system
-            current_point = pcbnew.VECTOR2I_MM(
-                x + board_offset_x,
-                -y + board_offset_y
-            )
+            kx = x + board_offset_x
+            ky = -y + board_offset_y
+            current_point = pcbnew.VECTOR2I_MM(kx, ky)
 
             if point_type == "line":
                 if len(previous_points) < 1:
@@ -571,6 +570,44 @@ def auto_route_board(save_path):
     # clean up the input DSN file
     if os.path.exists(dsn_path):
         os.remove(dsn_path)
+
+
+def add_ground_plane(
+        board,
+        layer_id,
+        net_name="Net_GND",
+        clearance_mm=0.2
+        ):
+    '''
+    Add a filled ground plane zone spanning the board's EdgeCuts bounding box.
+    '''
+    net = board.FindNet(net_name)
+    if net is None:
+        raise ValueError(f"Net '{net_name}' not found on board.")
+
+    bbox = board.GetBoardEdgesBoundingBox()
+    x1, y1 = bbox.GetLeft(), bbox.GetTop()
+    x2, y2 = bbox.GetRight(), bbox.GetBottom()
+
+    zone = pcbnew.ZONE(board)
+    zone.SetLayer(layer_id)
+    zone.SetNet(net)
+
+    outline = zone.Outline()
+    outline.NewOutline()
+    outline.Append(x1, y1)
+    outline.Append(x2, y1)
+    outline.Append(x2, y2)
+    outline.Append(x1, y2)
+
+    zone.SetLocalClearance(pcbnew.FromMM(clearance_mm))
+    zone.SetMinThickness(pcbnew.FromMM(0.2))
+    zone.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
+    zone.SetThermalReliefGap(pcbnew.FromMM(0.25))
+    zone.SetThermalReliefSpokeWidth(pcbnew.FromMM(0.25))
+
+    board.Add(zone)
+    return zone
 
 
 def generate_jlcpcb_files(

@@ -27,7 +27,7 @@ board_offset_x += (board_width/2)
 board_offset_y += (board_height/2)
 
 board = pcbnew.GetBoard()
-board.SetCopperLayerCount(4)
+board.SetCopperLayerCount(2)
 design_settings = board.GetDesignSettings()
 design_settings.m_MinClearance = pcbnew.FromMM(0.12)
 design_settings.SetBoardThickness(pcbnew.FromMM(0.8))
@@ -151,6 +151,24 @@ os.makedirs(save_path)
 
 # Run Freerouting plugin to route inner pins to outer through-holes
 utilities.auto_route_board(save_path=save_path)
+
+# Save copy of configured kicad_pcb in save_path
+pcb_path = os.path.join(save_path, "NightCap_TopPCB.kicad_pcb")
+pcbnew.SaveBoard(pcb_path, board)
+
+# Switch to 4-layer board for adding ground plane
+final_board = pcbnew.LoadBoard(pcb_path)
+final_board.SetCopperLayerCount(4)
+final_board.GetDesignSettings().m_CopperEdgeClearance = pcbnew.FromMM(0.30)
+pcbnew.SaveBoard(pcb_path, final_board)
+
+# Inject ground planes into the inner layers
+utilities.add_ground_plane(final_board, pcbnew.In1_Cu, net_name="Net_GND")
+utilities.add_ground_plane(final_board, pcbnew.In2_Cu, net_name="Net_GND")
+filler = pcbnew.ZONE_FILLER(final_board)
+filler.Fill(final_board.Zones())
+pcbnew.SaveBoard(pcb_path, final_board)
+
 pcbnew.Refresh()
 
 #%%
@@ -160,7 +178,7 @@ pcbnew.Refresh()
 
 # Generate gerber and drl for printing PCBs
 utilities.generate_jlcpcb_files(
-    board,
+    final_board,
     save_path=save_path,
     project_name="NightCap_TopPCB"
     )
@@ -183,7 +201,7 @@ with open(os.path.join(save_path, "NightCap_TopPCB_positions.csv"), mode="w", ne
     writer.writerows(connector_placement)
 
 # Plot top and bottom view of the PCB and save figures
-utilities.plot_pcb(board=board, save_path=save_path)
+utilities.plot_pcb(board=final_board, save_path=save_path)
 
 # Close PCB editor window
 for window in wx.GetTopLevelWindows():
