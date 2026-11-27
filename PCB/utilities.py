@@ -517,24 +517,29 @@ def load_pin_to_hole_matching_csv(
     pairs = []
     with open(filename, newline='') as f:
         reader = csv.DictReader(f)
-        rows = list(reader)
-
-        for row in rows:
+        for row in reader:
             pin_name = row["Pin"].strip()
-            hole_name = row["PTH"].strip()
+            raw_hole = row["PTH"].strip()
+            hole_key = raw_hole.upper() if raw_hole.upper() in ("GND", "REF") else raw_hole
 
             if pin_name not in pins:
                 print(f"Missing pin {pin_name}")
                 continue
 
-            if hole_name not in holes:
-                print(f"Missing connector pad {hole_name}")
+            matched_holes = holes.get(hole_key)
+            if not matched_holes:
+                print(f"Missing outer hole {raw_hole}")
                 continue
 
-            pairs.append((
-                pins[pin_name],
-                holes[hole_name],
-                pin_name
+            # Support both a list of holes (for repeated GND/REF) and a single hole dict
+            if isinstance(matched_holes, dict):
+                matched_holes = [matched_holes]
+
+            for hole in matched_holes:
+                pairs.append((
+                    pins[pin_name],
+                    hole,
+                    pin_name
                 ))
     return pairs
 
