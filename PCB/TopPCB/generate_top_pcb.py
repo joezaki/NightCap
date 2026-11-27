@@ -28,13 +28,22 @@ board_offset_y += (board_height/2)
 
 board = pcbnew.GetBoard()
 board.SetCopperLayerCount(2)
-design_settings = board.GetDesignSettings()
-design_settings.m_MinClearance = pcbnew.FromMM(0.12)
-design_settings.SetBoardThickness(pcbnew.FromMM(0.8))
-net_settings = design_settings.m_NetSettings
-default_netclass = net_settings.GetDefaultNetclass()
-default_netclass.SetClearance(pcbnew.FromMM(0.12))
-default_netclass.SetTrackWidth(pcbnew.FromMM(0.15))
+base_clearance = 0.15 if which_connector == 'omnetics' else 0.12
+board_rules = dict(
+    clearance_mm=base_clearance,
+    track_width_mm=0.15,
+    via_diameter_mm=0.45,
+    via_drill_mm=0.20,
+    edge_clearance_mm=0.35,
+    board_thickness_mm=0.8,
+    ref_net_name="Net_REF",
+    ref_clearance_mm=base_clearance,
+    ref_track_width_mm=0.20,
+)
+ref_nc = utilities.configure_board_rules(
+    board,
+    **board_rules
+)
 
 close_editor = True # whether or not to close the PCB editor automatically at the end
 
