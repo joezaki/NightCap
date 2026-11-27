@@ -4,6 +4,7 @@ import csv
 from datetime import datetime
 import wx
 import importlib
+from collections import defaultdict
 import sys
 sys.path.append('..')
 import utilities
@@ -97,24 +98,23 @@ connector = utilities.place_footprint(
     reference="J1"
 )
 connector_pads = utilities.get_pad_location_info(connector)
-outer_holes_dict = {
-    hole["ch"]: hole
-    for hole in outer_holes
-}
+outer_holes_by_ch = defaultdict(list)
+for hole in outer_holes:
+    raw_ch = hole["ch"].strip()
+    key = raw_ch.upper() if raw_ch.upper() in ("GND", "REF") else raw_ch
+    outer_holes_by_ch[key].append(hole)
 
 # Match inner connector pins to outer through-holes
 pairs = utilities.load_pin_to_hole_matching_csv(
     filename=f"../Coordinates/PTH_To_Pin_{which_connector.capitalize()}.csv",
-    holes=outer_holes_dict,
+    holes=outer_holes_by_ch,
     pins=connector_pads
 )
 for pin, hole, _ in pairs:
-    net_name = f"Net_{hole['ch']}"
-    net = board.FindNet(net_name)
-
-    if net is None:
-        net = pcbnew.NETINFO_ITEM(board, net_name)
-        board.Add(net)
+    raw_ch = hole["ch"].strip()
+    ch_norm = raw_ch.upper() if raw_ch.upper() in ("GND", "REF") else raw_ch
+    net_name = f"Net_{ch_norm}"
+    net = utilities.get_or_create_net(board, net_name)
 
     pin['obj'].SetNet(net)
     hole['obj'].SetNet(net)
