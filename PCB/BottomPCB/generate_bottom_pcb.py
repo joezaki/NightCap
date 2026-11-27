@@ -166,12 +166,15 @@ utilities.assign_ref_netclass(final_board, ref_net_name="Net_REF", ref_nc=final_
 pcbnew.SaveBoard(pcb_path, final_board)
 
 # Inject ground planes into the inner layers
-utilities.add_ground_plane(final_board, pcbnew.In1_Cu, net_name="Net_GND")
+in1_zone = utilities.add_ground_plane(final_board, pcbnew.In1_Cu, net_name="Net_GND")
 utilities.add_ground_plane(final_board, pcbnew.In2_Cu, net_name="Net_GND")
+for fp in final_board.GetFootprints(): # Force Pad_REF clearance on final_board before filling inner ground zones
+    if fp.GetReference() == "Pad_REF":
+        for pad in fp.Pads():
+            pad.SetLocalClearance(pcbnew.FromMM(0.36))
 filler = pcbnew.ZONE_FILLER(final_board)
 filler.Fill(final_board.Zones())
 pcbnew.SaveBoard(pcb_path, final_board)
-
 pcbnew.Refresh()
 
 # Run DRC to ensure no errors up until this point

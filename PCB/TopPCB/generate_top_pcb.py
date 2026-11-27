@@ -203,13 +203,18 @@ for fp in final_board.GetFootprints():
             pad.SetLocalClearance(pcbnew.FromMM(board_rules["ref_clearance_mm"] + 0.02))
 pcbnew.SaveBoard(pcb_path, final_board)
 
-# Inject ground planes into the inner layers
-utilities.add_ground_plane(final_board, pcbnew.In1_Cu, net_name="Net_GND")
+# Inject ground planes into the inner layers,add coplanar ground plane
+in1_zone = utilities.add_ground_plane(final_board, pcbnew.In1_Cu, net_name="Net_GND")
 utilities.add_ground_plane(final_board, pcbnew.In2_Cu, net_name="Net_GND")
 filler = pcbnew.ZONE_FILLER(final_board)
 filler.Fill(final_board.Zones())
+# Stitch ground plane
+utilities.add_stitching_vias(final_board, in1_zone, net_name="Net_GND")
+# Add coplanar ground plane on outer layers
+utilities.add_ground_plane(final_board, pcbnew.F_Cu, net_name="Net_GND")
+utilities.add_ground_plane(final_board, pcbnew.B_Cu, net_name="Net_GND")
+filler.Fill(final_board.Zones())
 pcbnew.SaveBoard(pcb_path, final_board)
-
 pcbnew.Refresh()
 
 # Run DRC to ensure no errors up until this point
