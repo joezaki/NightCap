@@ -146,15 +146,19 @@ def add_outer_holes(
     with open(outer_holes_csv, 'r') as f:
         reader = csv.reader(f)
         header = next(reader)  # columns are Ch, X, Y
+        ref_counts = {}
         for row in reader:
             ch, x, y = row[0], float(row[1]), float(row[2])
             x += board_offset_x
             y += board_offset_y
 
+            ref_counts[ch] = ref_counts.get(ch, 0) + 1
+            ref_name = f"Pad_{ch}" if ref_counts[ch] == 1 else f"Pad_{ch}_{ref_counts[ch]}"
+
             footprint = pcbnew.FOOTPRINT(board)
             footprint.SetFPID(pcbnew.LIB_ID("Generated", "HeaderPad"))
             footprint.SetPosition(pcbnew.VECTOR2I_MM(x, y))
-            footprint.SetReference(f"Pad_{ch}")
+            footprint.SetReference(ref_name)
             footprint.SetValue(ch)
 
             # add pad, configure as PTH, and translate
@@ -203,18 +207,21 @@ def add_inner_vias(
     with open(brain_regions_csv, 'r') as f:
         reader = csv.reader(f)
         header = next(reader) # skip header
-
+        ref_counts = {}
         for row in reader:
             ch, x, y = row[0], float(row[1]), -float(row[2])
             ap, ml, dv = row[2], row[1], row[3]
             x += board_offset_x
             y += board_offset_y
 
+            ref_counts[ch] = ref_counts.get(ch, 0) + 1
+            ref_name = f"Via_{ch}" if ref_counts[ch] == 1 else f"Via_{ch}_{ref_counts[ch]}"
+
             # create footprint wrapper for the wire hole
             footprint = pcbnew.FOOTPRINT(board)
             footprint.SetFPID(pcbnew.LIB_ID("Generated", "WireHole"))
             footprint.SetPosition(pcbnew.VECTOR2I_MM(x, y))
-            footprint.SetReference(f"Via_{ch}")
+            footprint.SetReference(ref_name)
 
             # create plated through-hole (PTH) pad
             pad = pcbnew.PAD(footprint)
