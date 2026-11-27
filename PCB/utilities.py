@@ -663,10 +663,13 @@ def auto_route_board(save_path):
     matches = glob.glob(search_pattern, recursive=True)
     
     if not matches:
-        print("Error: Could not find freerouting.jar. Ensure the plugin is installed.")
-        return
-        
-    jar_path = matches[0]
+        raise FileNotFoundError(
+            f"Could not find freerouting*.jar under '{base_path}'. "
+            "Install the Freerouting plugin via KiCad PCM before running."
+        )
+
+    matches.sort()
+    jar_path = matches[-1]
     print(f"Found Freerouting JAR: {jar_path}")
     
     # define permanent paths for Specctra files in the project folder
@@ -683,18 +686,23 @@ def auto_route_board(save_path):
         "java", "-jar", jar_path,
         "-de", dsn_path,
         "-do", ses_path,
-        "-mp", "10" 
+        "-mp", "50" 
     ]
-    
-    try:
-        subprocess.run(cmd, check=True) 
-    except subprocess.CalledProcessError as e:
-        print(f"Error running Freerouting: {e}")
-        return
+    subprocess.run(cmd, check=True)
         
     # import the routed copper paths back into KiCad
     print(f"Importing SES from {ses_path}.")
     pcbnew.ImportSpecctraSES(ses_path)
+
+    # check if any connections were left unrouted and error if true
+    board = pcbnew.GetBoard()
+    board.BuildConnectivity()
+    conn = board.GetConnectivity()
+    conn.RecalculateRatsnest()
+    unrouted = conn.GetUnconnectedCount(False)
+    if unrouted > 0:
+        raise RuntimeError(f"Autorouting incomplete: {unrouted} unconnected connection(s) remain.")
+
     print(f"Autorouting complete! Autorouting file saved at: {ses_path}")
     
     # clean up the input DSN file
