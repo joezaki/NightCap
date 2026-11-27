@@ -18,7 +18,7 @@ def draw_csv_outline(
         board_offset_y,
         line_thickness=0.15
         ):
-    """
+    '''
     (For Top and Bottom PCBs)
     Read PCB outline points from a CSV.
 
@@ -40,7 +40,7 @@ def draw_csv_outline(
         Midpoint -> save point but draw nothing
         Arc      -> use previous two points and current point
         Blank    -> save point but draw nothing
-    """
+    '''
 
     edge_cuts = pcbnew.Edge_Cuts
     line_width = pcbnew.FromMM(line_thickness)
@@ -842,6 +842,7 @@ def add_ground_plane(
         clearance_mm=0.2
         ):
     '''
+    (For Top and Bottom PCB)
     Add a filled ground plane zone spanning the board's EdgeCuts bounding box.
     '''
     net = board.FindNet(net_name)
@@ -868,6 +869,7 @@ def add_ground_plane(
     zone.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
     zone.SetThermalReliefGap(pcbnew.FromMM(0.25))
     zone.SetThermalReliefSpokeWidth(pcbnew.FromMM(0.25))
+    zone.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
 
     board.Add(zone)
     return zone
@@ -946,6 +948,7 @@ def run_DRC(
         "--output", os.path.join(save_path, "drc_report.txt"),
         pcb_path,
     ], check=True)
+
 
 def generate_jlcpcb_files(
         board,
