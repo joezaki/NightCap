@@ -682,6 +682,61 @@ def draw_magnet_circle(
 
         board.Add(ko)
 
+
+def configure_board_rules(
+    board,
+    clearance_mm=0.20,
+    track_width_mm=0.15,
+    via_diameter_mm=0.45,
+    via_drill_mm=0.20,
+    edge_clearance_mm=0.35,
+    board_thickness_mm=0.8,
+    ref_net_name="Net_REF",
+    ref_clearance_mm=0.30,
+    ref_track_width_mm=0.20,
+):
+    '''
+    (For Top and Bottom PCBs)
+    Configure board-level clearances, compact via geometry (0.45/0.20 mm),
+    copper-to-edge clearance (before routing), and a dedicated wider-clearance
+    'REF' netclass for low-crosstalk reference routing.
+    '''
+    ds = board.GetDesignSettings()
+    ds.m_MinClearance = pcbnew.FromMM(clearance_mm)
+    ds.m_CopperEdgeClearance = pcbnew.FromMM(edge_clearance_mm)
+    ds.m_TrackMinWidth = pcbnew.FromMM(track_width_mm)
+    ds.m_ViasMinSize = pcbnew.FromMM(via_diameter_mm)
+    if hasattr(ds, "m_ViasMinAnnularWidth"):
+        ds.m_ViasMinAnnularWidth = pcbnew.FromMM((via_diameter_mm - via_drill_mm) / 2 - 0.005)
+    if hasattr(ds, "m_ViasMinDrill"):
+        ds.m_ViasMinDrill = pcbnew.FromMM(via_drill_mm)
+    if hasattr(ds, "m_MinThroughDrill"):
+        ds.m_MinThroughDrill = pcbnew.FromMM(via_drill_mm)
+    ds.SetBoardThickness(pcbnew.FromMM(board_thickness_mm))
+
+    net_settings = ds.m_NetSettings
+    default_nc = net_settings.GetDefaultNetclass()
+    default_nc.SetClearance(pcbnew.FromMM(clearance_mm))
+    default_nc.SetTrackWidth(pcbnew.FromMM(track_width_mm))
+    default_nc.SetViaDiameter(pcbnew.FromMM(via_diameter_mm))
+    default_nc.SetViaDrill(pcbnew.FromMM(via_drill_mm))
+
+    # Dedicated REF netclass (wider clearance + slightly wider trace)
+    ref_nc = pcbnew.NETCLASS("REF")
+    ref_nc.SetClearance(pcbnew.FromMM(ref_clearance_mm))
+    ref_nc.SetTrackWidth(pcbnew.FromMM(ref_track_width_mm))
+    ref_nc.SetViaDiameter(pcbnew.FromMM(via_diameter_mm))
+    ref_nc.SetViaDrill(pcbnew.FromMM(via_drill_mm))
+
+    if hasattr(net_settings, "SetNetclass"):
+        net_settings.SetNetclass("REF", ref_nc)
+    if hasattr(net_settings, "SetNetclassPatternAssignment"):
+        net_settings.SetNetclassPatternAssignment(ref_net_name, "REF")
+
+    return ref_nc
+
+
+
 def auto_route_board(save_path):
     '''
     (For Top and Bottom PCB)
