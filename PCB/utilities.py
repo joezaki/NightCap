@@ -736,6 +736,39 @@ def configure_board_rules(
     return ref_nc
 
 
+def assign_ref_netclass(
+        board,
+        ref_net_name="Net_REF",
+        ref_nc=None
+        ):
+    '''
+    (For Top and Bottom PCB)
+    Bind Net_REF to the 'REF' netclass after pads/nets have been created and
+    before ExportSpecctraDSN() runs.
+    '''
+    net = board.FindNet(ref_net_name)
+    if net is None:
+        return
+
+    net_settings = board.GetDesignSettings().m_NetSettings
+    if hasattr(net_settings, "SetNetclassPatternAssignment"):
+        net_settings.SetNetclassPatternAssignment(ref_net_name, "REF")
+
+    if ref_nc is not None and hasattr(net, "SetNetClass"):
+        net.SetNetClass(ref_nc)
+
+    if hasattr(board, "SynchronizeNetsAndNetClasses"):
+        board.SynchronizeNetsAndNetClasses(False)
+
+    # if binding didn't work b/c names have changed across KiCad versions, error here
+    expected_name = ref_nc.GetName() if ref_nc is not None else "REF"
+    actual_name = net.GetNetClassName()
+    if actual_name != expected_name:
+        raise RuntimeError(
+            f"Failed to bind '{ref_net_name}' to netclass '{expected_name}' "
+            f"(resolved to '{actual_name}')."
+        )
+
 
 def auto_route_board(save_path):
     '''
