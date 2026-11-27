@@ -788,8 +788,9 @@ def generate_jlcpcb_files(
     
     # create output folder
     output_dir = os.path.join(save_path, f"{project_name}_Gerbers")
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
 
     # set up Plot Controller for Gerbers
     pctl = pcbnew.PLOT_CONTROLLER(board)
@@ -805,6 +806,7 @@ def generate_jlcpcb_files(
     popt.SetUseGerberProtelExtensions(False)
     popt.SetUseAuxOrigin(False) 
     popt.SetSubtractMaskFromSilk(True) # Clears silkscreen off your copper pads
+    popt.SetCreateGerberJobFile(True)
     
     # define all the layers JLCPCB needs except inner layers
     layers = [
@@ -814,6 +816,8 @@ def generate_jlcpcb_files(
         ("B_SilkS", pcbnew.B_SilkS, "Bottom Silkscreen"),
         ("F_Mask", pcbnew.F_Mask, "Top Solder Mask"),
         ("B_Mask", pcbnew.B_Mask, "Bottom Solder Mask"),
+        ("F_Paste", pcbnew.F_Paste, "Top Solder Paste"),
+        ("B_Paste", pcbnew.B_Paste, "Bottom Solder Paste"),
         ("Edge_Cuts", pcbnew.Edge_Cuts, "Board Outline")
     ]
 
