@@ -145,7 +145,9 @@ for magnet_coords in [
         center_y=board_offset_y + magnet_coords[1],
         radius=1.5875,
         board=board,
-        b_silk=b_silk
+        b_silk=b_silk,
+        add_keepout=True,
+        keepout_layers=[pcbnew.B_Cu]
         )
 
 # Remove reference labels to declutter PCB
