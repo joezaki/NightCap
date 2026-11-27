@@ -630,11 +630,23 @@ def draw_silk_line(start_mm, end_mm, layer, board):
     board.Add(line)
 
 
-def draw_magnet_circle(center_x, center_y, radius, board, b_silk):
+def draw_magnet_circle(
+        center_x,
+        center_y,
+        radius,
+        board,
+        b_silk,
+        add_keepout=True,
+        keepout_margin_mm=0.2,
+        keepout_layers=None,
+        segments=32,
+        ):
     '''
     (For Top and Bottom PCBs)
     Draw circle on bottom silkscreen for where magnets will go (if using).
+    Optionally also add keepout areas there to prevent autorouting there.
     '''
+
     circle = pcbnew.PCB_SHAPE(board)
     circle.SetShape(pcbnew.SHAPE_T_CIRCLE)
     circle.SetLayer(b_silk)
@@ -644,6 +656,31 @@ def draw_magnet_circle(center_x, center_y, radius, board, b_silk):
     circle.SetEnd(pcbnew.VECTOR2I_MM(center_x + radius, center_y))
     board.Add(circle)
 
+    if add_keepout:
+        ko = pcbnew.ZONE(board)
+        ko.SetIsRuleArea(True)
+        ko.SetDoNotAllowTracks(True)
+        ko.SetDoNotAllowVias(True)
+        ko.SetDoNotAllowPads(True)
+
+        if keepout_layers is None:
+            ko.SetLayerSet(pcbnew.LSET.AllCuMask())
+        else:
+            lset = pcbnew.LSET()
+            for layer_id in keepout_layers:
+                lset.AddLayer(layer_id)
+            ko.SetLayerSet(lset)
+
+        ko_radius = radius + keepout_margin_mm
+        outline = ko.Outline()
+        outline.NewOutline()
+        for i in range(segments):
+            theta = 2.0 * math.pi * i / segments
+            px = center_x + ko_radius * math.cos(theta)
+            py = center_y + ko_radius * math.sin(theta)
+            outline.Append(pcbnew.FromMM(px), pcbnew.FromMM(py))
+
+        board.Add(ko)
 
 def auto_route_board(save_path):
     '''
