@@ -598,10 +598,12 @@ def label_inner_vias(
             raw_y = -float(row[2]) + board_offset_y
             
             # Shift initial x position to left if on left hemisphere, right if right
+            text_str = region.split('_')[0]
+            offset_x = 0.55 + (0.28 * len(text_str))
             if region[-1] == 'L':
-                x = raw_x - (0.25*len(region.split('_')[0]))
+                x = raw_x - offset_x
             else: # if R or anything else, move right
-                x = raw_x + (0.25*len(region.split('_')[0]))
+                x = raw_x + offset_x
             y = raw_y
             
             via_label = pcbnew.PCB_TEXT(board)
