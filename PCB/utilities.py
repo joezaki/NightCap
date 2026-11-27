@@ -873,6 +873,54 @@ def add_ground_plane(
     return zone
 
 
+def add_stitching_vias(
+        board,
+        ref_zone,
+        net_name="Net_GND",
+        pitch_mm=1.5,
+        via_dia_mm=0.5,
+        via_drill_mm=0.25,
+        clearance_mm=0.25
+        ):
+    '''
+    (For Top PCB)
+    Add tiny vias in empty space around existing pins/pads after
+    autorouting board, to maximize grounding of the board.
+    '''
+    net = board.FindNet(net_name)
+    bbox = board.GetBoardEdgesBoundingBox()
+    pitch, r = pcbnew.FromMM(pitch_mm), pcbnew.FromMM(via_dia_mm / 2)
+    clear = r + pcbnew.FromMM(clearance_mm)
+    tracks, pads = list(board.GetTracks()), list(board.GetPads())
+    keepouts = [z for z in board.Zones() if z.GetIsRuleArea() and z.GetDoNotAllowVias()]
+
+    def ring(x, y, rad):
+        d = int(rad * 0.707)
+        return [pcbnew.VECTOR2I(x + dx, y + dy) for dx, dy in
+                ((0,0),(rad,0),(-rad,0),(0,rad),(0,-rad),(d,d),(d,-d),(-d,d),(-d,-d))]
+
+    count = 0
+    for x in range(bbox.GetLeft() + pitch // 2, bbox.GetRight(), pitch):
+        for y in range(bbox.GetTop() + pitch // 2, bbox.GetBottom(), pitch):
+            pos = pcbnew.VECTOR2I(x, y)
+            if (all(ref_zone.HitTestFilledArea(pcbnew.In1_Cu, p) for p in ring(x, y, r))
+                    and not any(k.Outline().Contains(p) for k in keepouts for p in ring(x, y, clear))
+                    and not any(t.HitTest(pos, clear) for t in tracks)
+                    and not any(p.HitTest(pos, clear) for p in pads)):
+                v = pcbnew.PCB_VIA(board)
+                v.SetPosition(pos)
+                v.SetWidth(pcbnew.FromMM(via_dia_mm))
+                v.SetDrill(pcbnew.FromMM(via_drill_mm))
+                v.SetViaType(pcbnew.VIATYPE_THROUGH)
+                v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+                v.SetNet(net)
+                board.Add(v)
+                tracks.append(v)
+                count += 1
+    print(f"Added {count} GND stitching vias.")
+    return count
+
+
 def run_DRC(
         save_path,
         pcb_path,
