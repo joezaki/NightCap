@@ -153,6 +153,26 @@ for magnet_coords in [
 # Remove reference labels to declutter PCB
 for module in board.Footprints():
     module.Reference().SetVisible(False)
+
+# Tie metallic mounting/shield pads on J1 to Net_GND so they don't float
+gnd_net = utilities.get_or_create_net(board, "Net_GND")
+for pad in connector.Pads():
+    # Skip pads already mapped via CSV and non-plated alignment holes (NPTH)
+    if pad.GetNetCode() != 0 or pad.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH:
+        continue
+
+    pad_num = pad.GetNumber().strip()
+    is_mechanical = (pad_num == "" or not pad_num.isdigit())
+
+    if is_mechanical:
+        pad.SetNet(gnd_net)
+        print(f"Connector mechanical/shield pad '{pad_num or '<unnumbered>'}' -> Net_GND")
+    else:
+        print(
+            f"Note: Unmapped numeric pad '{pad_num}' on J1 left floating "
+            "(if this is a mounting nail, map it to GND in the CSV or add it below)."
+        )
+
 pcbnew.Refresh()
 
 # Create save path
