@@ -182,6 +182,12 @@ pcbnew.SaveBoard(pcb_path, final_board)
 
 pcbnew.Refresh()
 
+# Run DRC to ensure no errors up until this point
+utilities.run_DRC(
+    save_path=save_path,
+    pcb_path=pcb_path
+    )
+
 #%%
 #########################################
 ## Generate JLCPCB files and PCB plots ##
