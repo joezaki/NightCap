@@ -173,6 +173,9 @@ for pad in connector.Pads():
             "(if this is a mounting nail, map it to GND in the CSV or add it below)."
         )
 
+# assign board rules before routing
+utilities.assign_ref_netclass(board, ref_net_name="Net_REF", ref_nc=ref_nc)
+
 pcbnew.Refresh()
 
 # Create save path
@@ -190,7 +193,14 @@ pcbnew.SaveBoard(pcb_path, board)
 # Switch to 4-layer board for adding ground plane
 final_board = pcbnew.LoadBoard(pcb_path)
 final_board.SetCopperLayerCount(4)
+final_ref_nc = utilities.configure_board_rules(final_board, **board_rules)
+utilities.assign_ref_netclass(final_board, ref_net_name="Net_REF", ref_nc=final_ref_nc)
+final_board.GetDesignSettings().SetBoardThickness(pcbnew.FromMM(0.8))
 final_board.GetDesignSettings().m_CopperEdgeClearance = pcbnew.FromMM(0.30)
+for fp in final_board.GetFootprints():
+    for pad in fp.Pads():
+        if pad.GetNetname() == "Net_REF" and pad.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
+            pad.SetLocalClearance(pcbnew.FromMM(board_rules["ref_clearance_mm"] + 0.02))
 pcbnew.SaveBoard(pcb_path, final_board)
 
 # Inject ground planes into the inner layers

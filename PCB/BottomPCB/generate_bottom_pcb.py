@@ -138,6 +138,10 @@ for magnet_coords in [
 # Remove reference labels to declutter PCB
 for module in board.Footprints():
     module.Reference().SetVisible(False)
+
+# bind Net_REF to REF netclass before routing
+utilities.assign_ref_netclass(board, ref_net_name="Net_REF", ref_nc=ref_nc)
+
 pcbnew.Refresh()
 
 # Create save path
@@ -155,7 +159,10 @@ pcbnew.SaveBoard(pcb_path, board)
 # Switch to 4-layer board for adding ground plane
 final_board = pcbnew.LoadBoard(pcb_path)
 final_board.SetCopperLayerCount(4)
+final_board.GetDesignSettings().SetBoardThickness(pcbnew.FromMM(0.8))
 final_board.GetDesignSettings().m_CopperEdgeClearance = pcbnew.FromMM(0.30)
+final_ref_nc = utilities.configure_board_rules(final_board, **board_rules)
+utilities.assign_ref_netclass(final_board, ref_net_name="Net_REF", ref_nc=final_ref_nc)
 pcbnew.SaveBoard(pcb_path, final_board)
 
 # Inject ground planes into the inner layers
