@@ -748,6 +748,32 @@ def add_ground_plane(
     return zone
 
 
+def run_DRC(
+        save_path,
+        pcb_path,
+        ):
+    '''
+    (For Top and Bottom PCB)
+    Run DRC using subprocess to ensure no errors prior to making JLCPCB files
+    '''
+
+    kicad_cli = shutil.which("kicad-cli")
+    if kicad_cli is None:
+        macos_cli = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
+        if os.path.exists(macos_cli):
+            kicad_cli = macos_cli
+        else:
+            raise FileNotFoundError(
+                "Could not locate 'kicad-cli' on PATH or in /Applications/KiCad/KiCad.app/Contents/MacOS/."
+            )
+
+    subprocess.run([
+        kicad_cli, "pcb", "drc",
+        "--severity-error", "--exit-code-violations",
+        "--output", os.path.join(save_path, "drc_report.txt"),
+        pcb_path,
+    ], check=True)
+
 def generate_jlcpcb_files(
         board,
         save_path,
