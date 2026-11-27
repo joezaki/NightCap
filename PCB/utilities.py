@@ -253,56 +253,172 @@ def get_angle(item, cy, cx):
     return math.atan2(item['y'] - cy, item['x'] - cx)
 
 
+def get_or_create_net(board, net_name):
+    '''
+    (For Top and Bottom PCB)
+    Return an existing NETINFO_ITEM by name, or create and register it.
+    '''
+    net = board.FindNet(net_name)
+    if net is None:
+        net = pcbnew.NETINFO_ITEM(board, net_name)
+        board.Add(net)
+    return net
+
+
+def best_cyclic_monotonic_pairs(vias_sorted, holes_sorted):
+    '''
+    (For Bottom PCB)
+    Match angle-sorted vias (n) to angle-sorted outer holes (m >= n) preserving
+    cyclic angular order while minimizing total Euclidean wire length across the
+    -pi/+pi seam. Reduces to exact cyclic shift when n == m.
+    '''
+    n = len(vias_sorted)
+    m = len(holes_sorted)
+    if n == 0:
+        return []
+    if n > m:
+        raise ValueError(
+            f"Cannot match {n} signal vias to only {m} available outer holes."
+        )
+
+    best_cost = float("inf")
+    best_pairs = None
+
+    for shift in range(m):
+        rotated = holes_sorted[shift:] + holes_sorted[:shift]
+
+        if n == m:
+            cost = sum(
+                math.hypot(
+                    vias_sorted[i]["x"] - rotated[i]["x"],
+                    vias_sorted[i]["y"] - rotated[i]["y"],
+                )
+                for i in range(n)
+            )
+            if cost < best_cost:
+                best_cost = cost
+                best_pairs = [(vias_sorted[i], rotated[i]) for i in range(n)]
+            continue
+
+        # Order-preserving DP when there are spare outer holes (m > n)
+        inf = float("inf")
+        dp = [[inf] * (m + 1) for _ in range(n + 1)]
+        take = [[False] * (m + 1) for _ in range(n + 1)]
+        for j in range(m + 1):
+            dp[0][j] = 0.0
+
+        for i in range(1, n + 1):
+            vx, vy = vias_sorted[i - 1]["x"], vias_sorted[i - 1]["y"]
+            for j in range(i, m + 1):
+                hx, hy = rotated[j - 1]["x"], rotated[j - 1]["y"]
+                use_cost = dp[i - 1][j - 1] + math.hypot(vx - hx, vy - hy)
+                skip_cost = dp[i][j - 1]
+                if use_cost < skip_cost:
+                    dp[i][j] = use_cost
+                    take[i][j] = True
+                else:
+                    dp[i][j] = skip_cost
+
+        if dp[n][m] < best_cost:
+            best_cost = dp[n][m]
+            chosen = []
+            i, j = n, m
+            while i > 0:
+                if take[i][j]:
+                    chosen.append((vias_sorted[i - 1], rotated[j - 1]))
+                    i -= 1
+                    j -= 1
+                else:
+                    j -= 1
+            chosen.reverse()
+            best_pairs = chosen
+
+    return best_pairs
+
+
 def match_vias_holes(
         outer_holes,
         inner_vias,
         board
-):
+        ):
     '''
     (For Bottom PCB)
-    Given two lists of outer PTH and inner vias, match the GND & REF channels first,
-    then match the remaining vias to their nearest radially positioned PTH.
+    Connect all GND and REF vias/outer holes to Net_GND and Net_REF, then match
+    remaining signal vias to outer PTH holes using seam-safe cyclic angular alignment
     '''
-    # look for GND and REF vias & through-holes
-    gnd_via = next((v for v in inner_vias if v['ch'].upper() == 'GND'), None)
-    gnd_hole = next((p for p in outer_holes if p['ch'].upper() == 'GND'), None)
-    ref_via = next((v for v in inner_vias if v['ch'].upper() == 'REF'), None)
-    ref_hole = next((p for p in outer_holes if p['ch'].upper() == 'REF'), None)
-
-    # filter them out to get remaining pairs 
-    rem_vias = [v for v in inner_vias if v['ch'].upper() not in ['GND', 'REF']]
-    rem_holes = [p for p in outer_holes if p['ch'].upper() not in ['GND', 'REF']]
-
     pairs = []
+    special_names = ("GND", "REF")
 
-    # match GND and REF (if they exist)
-    if gnd_via and gnd_hole:
-        pairs.append((gnd_via, gnd_hole, "GND"))
-    if ref_via and ref_hole:
-        pairs.append((ref_via, ref_hole, "REF"))
+    # 1. Always tie ALL GND and REF vias/holes to their shared nets
+    for special in special_names:
+        net_name = f"Net_{special}"
+        s_vias = [v for v in inner_vias if v["ch"].strip().upper() == special]
+        s_holes = [h for h in outer_holes if h["ch"].strip().upper() == special]
 
-    # match remaining vias to the remaining through-holes radially using the center of mass
-    cx = sum(v['x'] for v in rem_vias) / len(rem_vias)
-    cy = sum(v['y'] for v in rem_vias) / len(rem_vias)
+        if not s_vias and not s_holes:
+            continue
 
-    rem_vias.sort(key=partial(get_angle, cx=cx, cy=cy))
-    rem_holes.sort(key=partial(get_angle, cx=cx, cy=cy))
+        net = get_or_create_net(board, net_name)
+        for v in s_vias:
+            v["obj"].SetNet(net)
+        for h in s_holes:
+            h["obj"].SetNet(net)
 
-    for i in range(min(len(rem_vias), len(rem_holes))):
-        via = rem_vias[i]
-        hole = rem_holes[i]
-        pairs.append((via, hole, hole['ch']))
+        # record representative pairs for channel_map.csv (nearest outer hole per via)
+        remaining_holes = list(s_holes)
+        for v in s_vias:
+            if remaining_holes:
+                nearest = min(
+                    remaining_holes,
+                    key=lambda h: math.hypot(v["x"] - h["x"], v["y"] - h["y"]),
+                )
+                pairs.append((v, nearest, net_name))
+                remaining_holes.remove(nearest)
+            elif s_holes:
+                nearest = min(
+                    s_holes,
+                    key=lambda h: math.hypot(v["x"] - h["x"], v["y"] - h["y"]),
+                )
+                pairs.append((v, nearest, net_name))
 
-    for via, hole, net_suffix in pairs:
-        net_name = f"Net_{net_suffix}"
-        
-        # add Net match between via & through-hole
-        new_net = pcbnew.NETINFO_ITEM(board, net_name)
-        board.Add(new_net)
-        net_code = new_net.GetNetCode()
-        via['obj'].SetNetCode(net_code)
-        hole['obj'].SetNetCode(net_code)
+    # match remaining signal vias to remaining outer holes
+    rem_vias = [
+        v for v in inner_vias if v["ch"].strip().upper() not in special_names
+    ]
+    rem_holes = [
+        h for h in outer_holes if h["ch"].strip().upper() not in special_names
+    ]
+
+    seen_signal_chs = set()
+    for v in rem_vias:
+        ch_clean = v["ch"].strip()
+        if ch_clean in seen_signal_chs:
+            raise ValueError(
+                f"Duplicate signal channel '{ch_clean}' in brain regions CSV. "
+                "Each recording channel must have a unique name."
+            )
+        seen_signal_chs.add(ch_clean)
+
+    if not rem_vias:
+        cx = sum(h["x"] for h in outer_holes) / len(outer_holes)
+        cy = sum(h["y"] for h in outer_holes) / len(outer_holes)
+        return cx, cy, pairs
+
+    cx = sum(v["x"] for v in rem_vias) / len(rem_vias)
+    cy = sum(v["y"] for v in rem_vias) / len(rem_vias)
+
+    rem_vias.sort(key=partial(get_angle, cy=cy, cx=cx))
+    rem_holes.sort(key=partial(get_angle, cy=cy, cx=cx))
+
+    matched = best_cyclic_monotonic_pairs(rem_vias, rem_holes)
+    for via, hole in matched:
+        net_name = f"Net_{via['ch']}"
+        net = get_or_create_net(board, net_name)
+        via["obj"].SetNet(net)
+        hole["obj"].SetNet(net)
+        pairs.append((via, hole, net_name))
         print(f"Inner via '{via['ch']}' mapped to outer PTH '{hole['ch']}' -> {net_name}")
+
     return cx, cy, pairs
 
 
