@@ -94,7 +94,7 @@ connector = utilities.place_footprint(
     connector_x,
     connector_y,
     rotation_deg=rotation_deg,
-    reference="C1"
+    reference="J1"
 )
 connector_pads = utilities.get_pad_location_info(connector)
 outer_holes_dict = {
@@ -205,7 +205,7 @@ with open(os.path.join(save_path, "NightCap_TopPCB_BOM.csv"), mode="w", newline=
     writer = csv.writer(file)
     bom = [
         ['Comment', 'Designator', 'Footprint', 'LCSC Part #'],
-        [footprint_name, 'C1', footprint_name, '']
+        [footprint_name, 'J1', footprint_name, '']
     ]
     writer.writerows(bom)
 
@@ -213,7 +213,7 @@ with open(os.path.join(save_path, "NightCap_TopPCB_positions.csv"), mode="w", ne
     writer = csv.writer(file)
     connector_placement = [
         ['Designator', 'Mid X', 'Mid Y', 'Rotation', 'Layer'],
-        ['C1', connector_x, connector_y, rotation_deg, 'Top']
+        ['J1', f"{connector_x:.4f}mm", f"{-connector_y:.4f}mm", rotation_deg % 360, 'Top']
     ]
     writer.writerows(connector_placement)
 
