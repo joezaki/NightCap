@@ -147,7 +147,7 @@ def add_outer_holes(
         reader = csv.reader(f)
         header = next(reader)  # columns are Ch, X, Y
         for row in reader:
-            ch, x, y = row[0], float(row[2]), float(row[1])
+            ch, x, y = row[0], float(row[1]), float(row[2])
             x += board_offset_x
             y += board_offset_y
 
